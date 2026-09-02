@@ -1,0 +1,285 @@
+<h2>A vs D — More Screens</h2>
+<p class="subtitle">Warm Stone (left) vs Dusk (right) across 3 screens. Click your favourite overall direction.</p>
+
+<div style="display:flex;flex-direction:column;gap:40px;margin-top:16px;">
+
+  <!-- SCREEN 1: Transactions -->
+  <div>
+    <div class="label" style="margin-bottom:12px;">Transactions Screen</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <!-- A Transactions -->
+      <div class="option" data-choice="a" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:20px;overflow:hidden;border:3px solid transparent;">
+        <div style="background:#f7f4f0;font-family:system-ui,sans-serif;border-radius:17px;overflow:hidden;">
+          <div style="padding:14px 18px 0;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:9px;font-weight:700;color:#2d2420;">9:41</div>
+            <div style="font-size:9px;color:#9b8070;">▪▪▪</div>
+          </div>
+          <div style="padding:14px 18px 0;">
+            <div style="font-size:16px;font-weight:800;color:#2d2420;margin-bottom:2px;">Transactions</div>
+            <div style="font-size:10px;color:#b8a89a;">March 2026 · 24 transactions</div>
+          </div>
+          <!-- Filter pills -->
+          <div style="padding:10px 18px;display:flex;gap:7px;">
+            <div style="background:#9b7e6a;color:#fff;border-radius:20px;padding:4px 10px;font-size:9px;font-weight:700;">All</div>
+            <div style="background:#e8ddd5;color:#9b7e6a;border-radius:20px;padding:4px 10px;font-size:9px;font-weight:600;">Food</div>
+            <div style="background:#e8ddd5;color:#9b7e6a;border-radius:20px;padding:4px 10px;font-size:9px;font-weight:600;">Transport</div>
+          </div>
+          <!-- Transactions list -->
+          <div style="padding:0 18px 14px;display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 5px rgba(155,126,106,0.07);">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:30px;height:30px;background:#e8ddd5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">🍗</div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#2d2420;">Nandos</div>
+                  <div style="font-size:9px;color:#b8a89a;">Today · Eating out</div>
+                </div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#2d2420;">-£14.50</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 5px rgba(155,126,106,0.07);">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:30px;height:30px;background:#e8ddd5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">🚇</div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#2d2420;">TfL</div>
+                  <div style="font-size:9px;color:#b8a89a;">Today · Transport</div>
+                </div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#2d2420;">-£3.40</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 5px rgba(155,126,106,0.07);">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:30px;height:30px;background:#e8ddd5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">☕</div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#2d2420;">Pret a Manger</div>
+                  <div style="font-size:9px;color:#b8a89a;">Yesterday · Coffee</div>
+                </div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#2d2420;">-£4.75</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 5px rgba(155,126,106,0.07);">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:30px;height:30px;background:#daecd8;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">💸</div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#2d2420;">Student Finance</div>
+                  <div style="font-size:9px;color:#b8a89a;">2 days ago · Income</div>
+                </div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#4a7c59;">+£820.00</div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:8px 0 2px;font-weight:700;font-size:11px;color:#9b7e6a;">A — Warm Stone</div>
+      </div>
+
+      <!-- D Transactions -->
+      <div class="option" data-choice="d" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:20px;overflow:hidden;border:3px solid transparent;">
+        <div style="background:#f5f2f7;font-family:system-ui,sans-serif;border-radius:17px;overflow:hidden;">
+          <div style="padding:14px 18px 0;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:9px;font-weight:700;color:#1e1530;">9:41</div>
+            <div style="font-size:9px;color:#b0a0cc;">▪▪▪</div>
+          </div>
+          <div style="padding:14px 18px 0;">
+            <div style="font-size:16px;font-weight:800;color:#1e1530;margin-bottom:2px;">Transactions</div>
+            <div style="font-size:10px;color:#b0a0cc;">March 2026 · 24 transactions</div>
+          </div>
+          <div style="padding:10px 18px;display:flex;gap:7px;">
+            <div style="background:#7c5cbf;color:#fff;border-radius:20px;padding:4px 10px;font-size:9px;font-weight:700;">All</div>
+            <div style="background:#ede8f8;color:#7c5cbf;border-radius:20px;padding:4px 10px;font-size:9px;font-weight:600;">Food</div>
+            <div style="background:#ede8f8;color:#7c5cbf;border-radius:20px;padding:4px 10px;font-size:9px;font-weight:600;">Transport</div>
+          </div>
+          <div style="padding:0 18px 14px;display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 5px rgba(124,92,191,0.07);">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:30px;height:30px;background:#ede8f8;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">🍗</div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#1e1530;">Nandos</div>
+                  <div style="font-size:9px;color:#b0a0cc;">Today · Eating out</div>
+                </div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#1e1530;">-£14.50</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 5px rgba(124,92,191,0.07);">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:30px;height:30px;background:#ede8f8;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">🚇</div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#1e1530;">TfL</div>
+                  <div style="font-size:9px;color:#b0a0cc;">Today · Transport</div>
+                </div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#1e1530;">-£3.40</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 5px rgba(124,92,191,0.07);">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:30px;height:30px;background:#ede8f8;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">☕</div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#1e1530;">Pret a Manger</div>
+                  <div style="font-size:9px;color:#b0a0cc;">Yesterday · Coffee</div>
+                </div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#1e1530;">-£4.75</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 5px rgba(124,92,191,0.07);">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:30px;height:30px;background:#e0f0e8;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">💸</div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#1e1530;">Student Finance</div>
+                  <div style="font-size:9px;color:#b0a0cc;">2 days ago · Income</div>
+                </div>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:#4a7c59;">+£820.00</div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:8px 0 2px;font-weight:700;font-size:11px;color:#7c5cbf;">D — Dusk</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: Ask CAIT -->
+  <div>
+    <div class="label" style="margin-bottom:12px;">Ask CAIT Screen</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <!-- A Ask CAIT -->
+      <div class="option" data-choice="a" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:20px;overflow:hidden;border:3px solid transparent;">
+        <div style="background:#f7f4f0;font-family:system-ui,sans-serif;border-radius:17px;overflow:hidden;">
+          <div style="padding:14px 18px 8px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+              <div style="font-size:16px;font-weight:800;color:#2d2420;">Ask CAIT</div>
+              <div style="background:#9b7e6a;color:#fff;border-radius:20px;padding:2px 8px;font-size:8px;font-weight:700;">Your money friend</div>
+            </div>
+            <div style="font-size:10px;color:#b8a89a;">Ask me anything about your spending</div>
+          </div>
+          <!-- Chat -->
+          <div style="padding:0 18px;display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;gap:8px;align-items:flex-start;">
+              <div style="width:24px;height:24px;background:#9b7e6a;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Georgia',serif;font-size:13px;color:#fff;flex-shrink:0;">C</div>
+              <div style="background:#fff;border-radius:0 10px 10px 10px;padding:10px 12px;font-size:11px;color:#2d2420;line-height:1.5;box-shadow:0 1px 5px rgba(155,126,106,0.07);max-width:85%;">Hey 👋 I've had a look at your March so far. You're doing better than last month — want the full picture?</div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;">
+              <div style="background:#2d2420;border-radius:10px 0 10px 10px;padding:10px 12px;font-size:11px;color:#fff;line-height:1.5;max-width:75%;">Am I being stupid this month?</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;">
+              <div style="width:24px;height:24px;background:#9b7e6a;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Georgia',serif;font-size:13px;color:#fff;flex-shrink:0;">C</div>
+              <div style="background:#fff;border-radius:0 10px 10px 10px;padding:10px 12px;font-size:11px;color:#2d2420;line-height:1.5;box-shadow:0 1px 5px rgba(155,126,106,0.07);max-width:85%;">Honestly? Not really. <span style="color:#9b7e6a;font-weight:700;">£157</span> left and it's only the 19th. You've been to Nandos 4 times though. That's between you and God. 🍗</div>
+            </div>
+          </div>
+          <!-- Suggested prompts -->
+          <div style="padding:10px 18px;display:flex;flex-wrap:wrap;gap:6px;">
+            <div style="background:#e8ddd5;color:#2d2420;border-radius:20px;padding:5px 10px;font-size:9px;font-weight:600;">How bad was last week?</div>
+            <div style="background:#e8ddd5;color:#2d2420;border-radius:20px;padding:5px 10px;font-size:9px;font-weight:600;">What's draining my account?</div>
+          </div>
+          <!-- Input -->
+          <div style="margin:0 18px 14px;background:#fff;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 5px rgba(155,126,106,0.08);">
+            <div style="font-size:10px;color:#b8a89a;">Ask anything...</div>
+            <div style="width:24px;height:24px;background:#9b7e6a;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;">↑</div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:8px 0 2px;font-weight:700;font-size:11px;color:#9b7e6a;">A — Warm Stone</div>
+      </div>
+
+      <!-- D Ask CAIT -->
+      <div class="option" data-choice="d" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:20px;overflow:hidden;border:3px solid transparent;">
+        <div style="background:#f5f2f7;font-family:system-ui,sans-serif;border-radius:17px;overflow:hidden;">
+          <div style="padding:14px 18px 8px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+              <div style="font-size:16px;font-weight:800;color:#1e1530;">Ask CAIT</div>
+              <div style="background:#7c5cbf;color:#fff;border-radius:20px;padding:2px 8px;font-size:8px;font-weight:700;">Your money friend</div>
+            </div>
+            <div style="font-size:10px;color:#b0a0cc;">Ask me anything about your spending</div>
+          </div>
+          <div style="padding:0 18px;display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;gap:8px;align-items:flex-start;">
+              <div style="width:24px;height:24px;background:#7c5cbf;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Georgia',serif;font-size:13px;color:#fff;flex-shrink:0;">C</div>
+              <div style="background:#fff;border-radius:0 10px 10px 10px;padding:10px 12px;font-size:11px;color:#1e1530;line-height:1.5;box-shadow:0 1px 5px rgba(124,92,191,0.07);max-width:85%;">Hey 👋 I've had a look at your March so far. You're doing better than last month — want the full picture?</div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;">
+              <div style="background:#1e1530;border-radius:10px 0 10px 10px;padding:10px 12px;font-size:11px;color:#fff;line-height:1.5;max-width:75%;">Am I being stupid this month?</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;">
+              <div style="width:24px;height:24px;background:#7c5cbf;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Georgia',serif;font-size:13px;color:#fff;flex-shrink:0;">C</div>
+              <div style="background:#fff;border-radius:0 10px 10px 10px;padding:10px 12px;font-size:11px;color:#1e1530;line-height:1.5;box-shadow:0 1px 5px rgba(124,92,191,0.07);max-width:85%;">Honestly? Not really. <span style="color:#7c5cbf;font-weight:700;">£157</span> left and it's only the 19th. You've been to Nandos 4 times though. That's between you and God. 🍗</div>
+            </div>
+          </div>
+          <div style="padding:10px 18px;display:flex;flex-wrap:wrap;gap:6px;">
+            <div style="background:#ede8f8;color:#1e1530;border-radius:20px;padding:5px 10px;font-size:9px;font-weight:600;">How bad was last week?</div>
+            <div style="background:#ede8f8;color:#1e1530;border-radius:20px;padding:5px 10px;font-size:9px;font-weight:600;">What's draining my account?</div>
+          </div>
+          <div style="margin:0 18px 14px;background:#fff;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 5px rgba(124,92,191,0.08);">
+            <div style="font-size:10px;color:#b0a0cc;">Ask anything...</div>
+            <div style="width:24px;height:24px;background:#7c5cbf;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;">↑</div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:8px 0 2px;font-weight:700;font-size:11px;color:#7c5cbf;">D — Dusk</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: Transaction Detail -->
+  <div>
+    <div class="label" style="margin-bottom:12px;">Transaction Detail</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <!-- A Detail -->
+      <div class="option" data-choice="a" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:20px;overflow:hidden;border:3px solid transparent;">
+        <div style="background:#f7f4f0;font-family:system-ui,sans-serif;border-radius:17px;overflow:hidden;padding:14px 18px;">
+          <div style="font-size:10px;color:#9b7e6a;margin-bottom:12px;">← Transactions</div>
+          <div style="text-align:center;margin-bottom:14px;">
+            <div style="width:52px;height:52px;background:#e8ddd5;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 8px;">🍗</div>
+            <div style="font-size:14px;font-weight:800;color:#2d2420;">Nandos</div>
+            <div style="font-family:'Georgia',serif;font-size:28px;color:#2d2420;margin:4px 0;">£14.50</div>
+            <div style="font-size:9px;color:#b8a89a;">Today, 7:42pm</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;box-shadow:0 1px 5px rgba(155,126,106,0.07);">
+              <div style="font-size:10px;color:#b8a89a;">Category</div>
+              <div style="font-size:10px;font-weight:700;color:#2d2420;">Eating out</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;box-shadow:0 1px 5px rgba(155,126,106,0.07);">
+              <div style="font-size:10px;color:#b8a89a;">This month at Nandos</div>
+              <div style="font-size:10px;font-weight:700;color:#2d2420;">5 visits · £72.50</div>
+            </div>
+          </div>
+          <div style="background:#fff;border-radius:10px;padding:12px;border-left:3px solid #9b7e6a;box-shadow:0 1px 5px rgba(155,126,106,0.07);">
+            <div style="font-size:7px;color:#9b7e6a;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">✦ CAIT</div>
+            <div style="font-size:11px;color:#2d2420;line-height:1.5;">Fifth time this month. Honestly? Respect. But that's £72.50 on chicken. Just so you know.</div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:8px 0 2px;font-weight:700;font-size:11px;color:#9b7e6a;">A — Warm Stone</div>
+      </div>
+
+      <!-- D Detail -->
+      <div class="option" data-choice="d" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:20px;overflow:hidden;border:3px solid transparent;">
+        <div style="background:#f5f2f7;font-family:system-ui,sans-serif;border-radius:17px;overflow:hidden;padding:14px 18px;">
+          <div style="font-size:10px;color:#7c5cbf;margin-bottom:12px;">← Transactions</div>
+          <div style="text-align:center;margin-bottom:14px;">
+            <div style="width:52px;height:52px;background:#ede8f8;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 8px;">🍗</div>
+            <div style="font-size:14px;font-weight:800;color:#1e1530;">Nandos</div>
+            <div style="font-family:'Georgia',serif;font-size:28px;color:#1e1530;margin:4px 0;">£14.50</div>
+            <div style="font-size:9px;color:#b0a0cc;">Today, 7:42pm</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;box-shadow:0 1px 5px rgba(124,92,191,0.07);">
+              <div style="font-size:10px;color:#b0a0cc;">Category</div>
+              <div style="font-size:10px;font-weight:700;color:#1e1530;">Eating out</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;box-shadow:0 1px 5px rgba(124,92,191,0.07);">
+              <div style="font-size:10px;color:#b0a0cc;">This month at Nandos</div>
+              <div style="font-size:10px;font-weight:700;color:#1e1530;">5 visits · £72.50</div>
+            </div>
+          </div>
+          <div style="background:#fff;border-radius:10px;padding:12px;border-left:3px solid #7c5cbf;box-shadow:0 1px 5px rgba(124,92,191,0.07);">
+            <div style="font-size:7px;color:#7c5cbf;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">✦ CAIT</div>
+            <div style="font-size:11px;color:#1e1530;line-height:1.5;">Fifth time this month. Honestly? Respect. But that's £72.50 on chicken. Just so you know.</div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:8px 0 2px;font-weight:700;font-size:11px;color:#7c5cbf;">D — Dusk</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:24px;">Click whichever direction feels most like CAIT across all 3 screens.</p>

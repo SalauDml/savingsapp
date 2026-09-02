@@ -1,0 +1,244 @@
+<h2>Friendly. Quick. Confident.</h2>
+<p class="subtitle">New brief: you're out with friends, phone comes out, 3-second glance. What colour feels right in that moment?</p>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+.colour-card {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+}
+.colour-card:hover { border-color: #555; }
+.colour-card.selected { border-color: #333; box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
+
+.colour-preview {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.phone-sm {
+  border-radius: 14px;
+  padding: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+}
+
+.colour-meta {
+  padding: 14px 18px;
+  border-top: 1px solid #f0f0f0;
+  font-family: 'DM Sans', sans-serif;
+}
+.colour-meta h3 { margin: 0 0 5px; font-size: 15px; font-weight: 700; }
+.colour-meta p { margin: 0; font-size: 12px; color: #555; line-height: 1.6; }
+.colour-meta .tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-top: 7px; }
+.swatch-row { display: flex; gap: 6px; margin-top: 10px; align-items: center; }
+.swatch { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); }
+</style>
+
+<!-- CORAL -->
+<div class="colour-card" data-choice="coral" onclick="toggleSelect(this)">
+  <div class="colour-preview" style="background: #fff8f6;">
+
+    <div class="phone-sm" style="background: #fff8f6;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div>
+          <div style="color:#c96a50; font-size:9px; font-weight:700; letter-spacing:0.5px;">Hi Sam 👋</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:26px; color:#1a0a06; letter-spacing:-0.5px; line-height:1.1; margin-top:2px;">£342.80</div>
+          <div style="color:#c96a50; font-size:9px; margin-top:1px;">this month</div>
+        </div>
+        <div style="width:36px; height:36px; background:#fde8e3; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px;">💸</div>
+      </div>
+      <div style="background:#fff; border-radius:12px; padding:10px 12px; margin-bottom:8px; box-shadow:0 1px 8px rgba(201,106,80,0.1);">
+        <div style="color:#c96a50; font-size:8px; font-weight:700; letter-spacing:0.5px; margin-bottom:6px;">TOP SPEND</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:28px; height:28px; background:#fde8e3; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;">🍕</div>
+          <div style="flex:1;">
+            <div style="color:#1a0a06; font-size:10px; font-weight:600;">Eating out</div>
+            <div style="height:4px; background:#fde8e3; border-radius:2px; margin-top:3px;"><div style="width:68%; height:100%; background:#e8785c; border-radius:2px;"></div></div>
+          </div>
+          <div style="font-family:'DM Serif Display',serif; font-size:12px; color:#1a0a06; flex-shrink:0;">£128</div>
+        </div>
+      </div>
+      <div style="background:#1a0a06; border-radius:10px; padding:9px 11px; display:flex; align-items:center; gap:7px;">
+        <span style="font-size:12px;">💬</span>
+        <span style="color:#fde8e3; font-size:9px; font-weight:500;">Can I afford this?</span>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="background:#e8785c; border-radius:12px; padding:12px;">
+        <div style="color:rgba(255,255,255,0.8); font-size:8px; font-weight:700; letter-spacing:0.5px; margin-bottom:5px;">QUICK CHECK</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:20px; color:#fff; line-height:1;">£157</div>
+        <div style="color:rgba(255,255,255,0.8); font-size:9px; margin-top:2px;">left this month</div>
+      </div>
+      <div style="background:#fff; border-radius:12px; padding:12px; box-shadow:0 1px 8px rgba(201,106,80,0.08);">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between;">
+            <div style="color:#1a0a06; font-size:10px; font-weight:600;">Nandos</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:10px; color:#1a0a06;">−£18.50</div>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <div style="color:#1a0a06; font-size:10px; font-weight:600;">Tesco</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:10px; color:#1a0a06;">−£14.30</div>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <div style="color:#1a0a06; font-size:10px; font-weight:600;">TfL</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:10px; color:#1a0a06;">−£3.40</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="colour-meta">
+    <h3>A — Warm Coral</h3>
+    <p>Lively without being loud. Monzo proved coral works in fintech — this is warmer and softer than theirs, more personal. The contrast between the pale background and dark text gives fast legibility outdoors. Feels friendly and alive.</p>
+    <div class="swatch-row">
+      <div class="swatch" style="background:#fff8f6;"></div>
+      <div class="swatch" style="background:#e8785c;"></div>
+      <div class="swatch" style="background:#c96a50;"></div>
+      <div class="swatch" style="background:#1a0a06;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AMBER -->
+<div class="colour-card" data-choice="amber" onclick="toggleSelect(this)">
+  <div class="colour-preview" style="background: #fffbf2;">
+
+    <div class="phone-sm" style="background: #fffbf2;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div>
+          <div style="color:#b07d20; font-size:9px; font-weight:700; letter-spacing:0.5px;">Hey Sam 👋</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:26px; color:#1a1200; letter-spacing:-0.5px; line-height:1.1; margin-top:2px;">£342.80</div>
+          <div style="color:#b07d20; font-size:9px; margin-top:1px;">this month</div>
+        </div>
+        <div style="width:36px; height:36px; background:#fce9b4; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px;">✨</div>
+      </div>
+      <div style="background:#fff; border-radius:12px; padding:10px 12px; margin-bottom:8px; box-shadow:0 1px 8px rgba(176,125,32,0.1);">
+        <div style="color:#b07d20; font-size:8px; font-weight:700; letter-spacing:0.5px; margin-bottom:6px;">TOP SPEND</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:28px; height:28px; background:#fce9b4; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;">🍕</div>
+          <div style="flex:1;">
+            <div style="color:#1a1200; font-size:10px; font-weight:600;">Eating out</div>
+            <div style="height:4px; background:#fce9b4; border-radius:2px; margin-top:3px;"><div style="width:68%; height:100%; background:#d4940a; border-radius:2px;"></div></div>
+          </div>
+          <div style="font-family:'DM Serif Display',serif; font-size:12px; color:#1a1200; flex-shrink:0;">£128</div>
+        </div>
+      </div>
+      <div style="background:#1a1200; border-radius:10px; padding:9px 11px; display:flex; align-items:center; gap:7px;">
+        <span style="font-size:12px;">💬</span>
+        <span style="color:#fce9b4; font-size:9px; font-weight:500;">Can I afford this?</span>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="background:#d4940a; border-radius:12px; padding:12px;">
+        <div style="color:rgba(255,255,255,0.8); font-size:8px; font-weight:700; letter-spacing:0.5px; margin-bottom:5px;">QUICK CHECK</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:20px; color:#fff; line-height:1;">£157</div>
+        <div style="color:rgba(255,255,255,0.8); font-size:9px; margin-top:2px;">left this month</div>
+      </div>
+      <div style="background:#fff; border-radius:12px; padding:12px; box-shadow:0 1px 8px rgba(176,125,32,0.08);">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between;">
+            <div style="color:#1a1200; font-size:10px; font-weight:600;">Nandos</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:10px; color:#1a1200;">−£18.50</div>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <div style="color:#1a1200; font-size:10px; font-weight:600;">Tesco</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:10px; color:#1a1200;">−£14.30</div>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <div style="color:#1a1200; font-size:10px; font-weight:600;">TfL</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:10px; color:#1a1200;">−£3.40</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="colour-meta">
+    <h3>B — Amber / Marigold</h3>
+    <p>Optimistic and warm — the colour of "yes, you can." Amber is used almost nowhere in fintech, which is the point. Energetic but not anxious. Has a golden quality that feels rewarding rather than stressful. Daylight-readable, distinctly friendly.</p>
+    <div class="swatch-row">
+      <div class="swatch" style="background:#fffbf2;"></div>
+      <div class="swatch" style="background:#d4940a;"></div>
+      <div class="swatch" style="background:#b07d20;"></div>
+      <div class="swatch" style="background:#1a1200;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DEEP VIOLET -->
+<div class="colour-card" data-choice="violet" onclick="toggleSelect(this)">
+  <div class="colour-preview" style="background: #f8f6ff;">
+
+    <div class="phone-sm" style="background: #f8f6ff;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div>
+          <div style="color:#6c4fc2; font-size:9px; font-weight:700; letter-spacing:0.5px;">Hey Sam 👋</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:26px; color:#160e2e; letter-spacing:-0.5px; line-height:1.1; margin-top:2px;">£342.80</div>
+          <div style="color:#6c4fc2; font-size:9px; margin-top:1px;">this month</div>
+        </div>
+        <div style="width:36px; height:36px; background:#e4dcf8; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px;">⚡</div>
+      </div>
+      <div style="background:#fff; border-radius:12px; padding:10px 12px; margin-bottom:8px; box-shadow:0 1px 8px rgba(108,79,194,0.1);">
+        <div style="color:#6c4fc2; font-size:8px; font-weight:700; letter-spacing:0.5px; margin-bottom:6px;">TOP SPEND</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:28px; height:28px; background:#e4dcf8; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;">🍕</div>
+          <div style="flex:1;">
+            <div style="color:#160e2e; font-size:10px; font-weight:600;">Eating out</div>
+            <div style="height:4px; background:#e4dcf8; border-radius:2px; margin-top:3px;"><div style="width:68%; height:100%; background:#7c5fc8; border-radius:2px;"></div></div>
+          </div>
+          <div style="font-family:'DM Serif Display',serif; font-size:12px; color:#160e2e; flex-shrink:0;">£128</div>
+        </div>
+      </div>
+      <div style="background:#160e2e; border-radius:10px; padding:9px 11px; display:flex; align-items:center; gap:7px;">
+        <span style="font-size:12px;">💬</span>
+        <span style="color:#e4dcf8; font-size:9px; font-weight:500;">Can I afford this?</span>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="background:#7c5fc8; border-radius:12px; padding:12px;">
+        <div style="color:rgba(255,255,255,0.75); font-size:8px; font-weight:700; letter-spacing:0.5px; margin-bottom:5px;">QUICK CHECK</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:20px; color:#fff; line-height:1;">£157</div>
+        <div style="color:rgba(255,255,255,0.75); font-size:9px; margin-top:2px;">left this month</div>
+      </div>
+      <div style="background:#fff; border-radius:12px; padding:12px; box-shadow:0 1px 8px rgba(108,79,194,0.08);">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between;">
+            <div style="color:#160e2e; font-size:10px; font-weight:600;">Nandos</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:10px; color:#160e2e;">−£18.50</div>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <div style="color:#160e2e; font-size:10px; font-weight:600;">Tesco</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:10px; color:#160e2e;">−£14.30</div>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <div style="color:#160e2e; font-size:10px; font-weight:600;">TfL</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:10px; color:#160e2e;">−£3.40</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="colour-meta">
+    <h3>C — Deep Violet</h3>
+    <p>Confident, social, Gen-Z native. Violet reads as tech-forward and energetic — without the clinical edge of blue or the aggression of red. Used by Cash App and Discord. Pairs surprisingly well with DM Serif, making the numbers feel premium.</p>
+    <div class="swatch-row">
+      <div class="swatch" style="background:#f8f6ff;"></div>
+      <div class="swatch" style="background:#7c5fc8;"></div>
+      <div class="swatch" style="background:#6c4fc2;"></div>
+      <div class="swatch" style="background:#160e2e;"></div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="font-style:italic; margin-top:8px;">Notice each card also has a "Can I afford this?" prompt — that use case is baked into the layout now. Same DM Serif, same structure, completely different personality.</p>

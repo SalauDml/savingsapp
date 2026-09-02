@@ -1,0 +1,40 @@
+# Environment secrets (Supabase keys, TrueLayer client ID/secret, etc.)
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Expo / React Native (apps/mobile has its own more detailed .gitignore too)
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Supabase CLI local state (project refs, cached CLI version, pooler URLs —
+# regenerated per-machine by `supabase link`, not something to share)
+supabase/.temp/
+
+# Claude Code local settings (personal tool-permission allowlist, not shared project config)
+.claude/settings.local.json
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Tool-generated debug/session artifacts, not project source
+.playwright-mcp/
+.superpowers/brainstorm/*/state/

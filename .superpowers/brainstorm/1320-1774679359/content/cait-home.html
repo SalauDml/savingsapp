@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAIT — Home Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a0a06;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    gap: 40px;
+  }
+
+  .page-title {
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .screens-row {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .screen-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .screen-tag {
+    color: rgba(255,255,255,0.4);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* Phone shell */
+  .phone-shell {
+    width: 240px;
+    background: #111;
+    border-radius: 36px;
+    padding: 10px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08),
+      0 30px 80px rgba(0,0,0,0.6),
+      inset 0 1px 1px rgba(255,255,255,0.1);
+    position: relative;
+  }
+
+  .phone-screen {
+    background: #fff9f7;
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Status bar */
+  .status-bar {
+    padding: 12px 20px 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff9f7;
+  }
+  .status-bar span {
+    font-size: 10px;
+    font-weight: 700;
+    color: #1a0a06;
+  }
+  .status-icons { display: flex; gap: 4px; align-items: center; }
+  .status-icons span { font-size: 9px; color: #1a0a06; }
+
+  /* ─── SCREEN 1: HOME ─── */
+  .home-screen { padding: 6px 18px 20px; }
+
+  .home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .home-greeting {
+    font-size: 11px;
+    font-weight: 700;
+    color: #c96a50;
+    margin-bottom: 3px;
+  }
+  .home-balance {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    color: #1a0a06;
+    letter-spacing: -1.5px;
+    line-height: 1;
+  }
+  .home-balance-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #c96a50;
+    margin-top: 3px;
+  }
+  .avatar {
+    width: 42px;
+    height: 42px;
+    background: #e8785c;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  /* CAIT insight card */
+  .cait-card {
+    background: #1a0a06;
+    border-radius: 14px;
+    padding: 13px 15px;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cait-card::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle, rgba(232,120,92,0.3) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cait-label {
+    font-size: 9px;
+    font-weight: 800;
+    color: #e8785c;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .cait-text {
+    font-size: 12px;
+    color: #fff;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .cait-text strong { color: #e8785c; }
+
+  /* Categories */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #1a0a06;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .see-all {
+    font-size: 10px;
+    font-weight: 600;
+    color: #e8785c;
+  }
+
+  .category-row {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+  .category-item {
+    background: #fff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 1px 6px rgba(201,106,80,0.07);
+  }
+  .cat-icon {
+    width: 30px;
+    height: 30px;
+    background: #fde8e3;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .cat-info { flex: 1; }
+  .cat-name { font-size: 11px; font-weight: 700; color: #1a0a06; margin-bottom: 3px; }
+  .cat-bar { height: 3px; background: #fde8e3; border-radius: 2px; }
+  .cat-bar-fill { height: 100%; background: #e8785c; border-radius: 2px; }
+  .cat-amount { font-size: 12px; font-weight: 700; color: #1a0a06; flex-shrink: 0; }
+
+  /* Ask CAIT button */
+  .ask-cait {
+    background: #e8785c;
+    border-radius: 12px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ask-cait-text { flex: 1; }
+  .ask-cait-label { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 1px; }
+  .ask-cait-prompt { font-size: 12px; font-weight: 700; color: #fff; }
+  .ask-cait-arrow {
+    width: 26px; height: 26px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  /* Bottom nav */
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 10px 8px;
+    background: #fff;
+    border-top: 1px solid #f5ede9;
+    margin-top: 10px;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .nav-icon { font-size: 16px; }
+  .nav-label { font-size: 7px; font-weight: 600; color: #ccc; }
+  .nav-item.active .nav-label { color: #e8785c; }
+  .nav-dot {
+    width: 4px; height: 4px;
+    background: #e8785c;
+    border-radius: 50%;
+    margin: 0 auto;
+  }
+
+  /* ─── SCREEN 2: ASK CAIT ─── */
+  .ask-screen { padding: 6px 18px 0; }
+
+  .ask-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .ask-title { font-size: 14px; font-weight: 800; color: #1a0a06; }
+  .cait-badge {
+    background: #e8785c;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+  .ask-subtitle { font-size: 10px; color: #c96a50; font-weight: 500; margin-bottom: 14px; }
+
+  .chat-bubbles { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+
+  .bubble-cait {
+    display: flex;
+    gap: 7px;
+    align-items: flex-start;
+  }
+  .cait-avatar-sm {
+    width: 22px; height: 22px;
+    background: #e8785c;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .bubble-cait-text {
+    background: #fff;
+    border-radius: 10px 10px 10px 2px;
+    padding: 8px 10px;
+    font-size: 10px;
+    color: #1a0a06;
+    line-height: 1.5;
+    box-shadow: 0 1px 4px rgba(201,106,80,0.1);
+    max-width: 85%;
+  }
+  .bubble-user {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .bubble-user-text {
+    background: #1a0a06;
+    border-radius: 10px 10px 2px 10px;
+    padding: 8px 10px;
+    font-size: 10px;
+    color: #fff;
+    line-height: 1.5;
+    max-width: 80%;
+  }
+
+  .suggested-prompts {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .prompt-chip {
+    background: #fff;
+    border: 1.5px solid #fde8e3;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #1a0a06;
+  }
+
+  .chat-input {
+    background: #f5ede9;
+    border-radius: 10px;
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 -18px;
+    margin-top: 0;
+  }
+  .chat-input-text { flex: 1; font-size: 10px; color: #999; }
+  .send-btn {
+    width: 24px; height: 24px;
+    background: #e8785c;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  /* ─── SCREEN 3: TRANSACTION DETAIL ─── */
+  .txn-screen { padding: 6px 18px 20px; }
+
+  .back-btn { font-size: 10px; color: #e8785c; font-weight: 700; margin-bottom: 16px; }
+
+  .txn-hero {
+    text-align: center;
+    padding: 16px 0 20px;
+    border-bottom: 1px solid #f5ede9;
+    margin-bottom: 16px;
+  }
+  .txn-merchant-icon {
+    width: 50px; height: 50px;
+    background: #fde8e3;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 10px;
+  }
+  .txn-merchant { font-size: 14px; font-weight: 800; color: #1a0a06; margin-bottom: 4px; }
+  .txn-amount { font-family: 'DM Serif Display', serif; font-size: 32px; color: #1a0a06; letter-spacing: -0.5px; }
+  .txn-date { font-size: 10px; color: #c96a50; margin-top: 4px; font-weight: 600; }
+
+  .txn-meta { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .txn-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .txn-row-label { font-size: 10px; color: #999; font-weight: 600; }
+  .txn-row-value { font-size: 10px; font-weight: 700; color: #1a0a06; }
+
+  .cait-nudge {
+    background: #fff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    border-left: 3px solid #e8785c;
+    box-shadow: 0 1px 6px rgba(201,106,80,0.08);
+  }
+  .cait-nudge-label { font-size: 9px; font-weight: 800; color: #e8785c; margin-bottom: 3px; letter-spacing: 0.3px; }
+  .cait-nudge-text { font-size: 10px; color: #1a0a06; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="page-title">CAIT — Coral Design System · Three key screens</div>
+
+<div class="screens-row">
+
+  <!-- ── SCREEN 1: HOME ── -->
+  <div class="screen-container">
+    <span class="screen-tag">Home</span>
+    <div class="phone-shell">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-icons"><span>●●●</span><span>⬡</span><span>▐</span></div>
+        </div>
+        <div class="home-screen">
+          <div class="home-header">
+            <div>
+              <div class="home-greeting">Hey Sam 👋</div>
+              <div class="home-balance">£342.80</div>
+              <div class="home-balance-label">spent this month</div>
+            </div>
+            <div class="avatar">🌶️</div>
+          </div>
+
+          <div class="cait-card">
+            <div class="cait-label">✦ CAIT says</div>
+            <div class="cait-text">You've visited Nandos <strong>4 times</strong> this month. At this rate you're basically a loyalty scheme waiting to happen.</div>
+          </div>
+
+          <div class="section-header">
+            <span class="section-label">Where it went</span>
+            <span class="see-all">See all →</span>
+          </div>
+
+          <div class="category-row">
+            <div class="category-item">
+              <div class="cat-icon">🍕</div>
+              <div class="cat-info">
+                <div class="cat-name">Eating out</div>
+                <div class="cat-bar"><div class="cat-bar-fill" style="width:68%"></div></div>
+              </div>
+              <div class="cat-amount">£128</div>
+            </div>
+            <div class="category-item">
+              <div class="cat-icon">🚌</div>
+              <div class="cat-info">
+                <div class="cat-name">Transport</div>
+                <div class="cat-bar"><div class="cat-bar-fill" style="width:42%"></div></div>
+              </div>
+              <div class="cat-amount">£74</div>
+            </div>
+            <div class="category-item">
+              <div class="cat-icon">🛍</div>
+              <div class="cat-info">
+                <div class="cat-name">Shopping</div>
+                <div class="cat-bar"><div class="cat-bar-fill" style="width:35%"></div></div>
+              </div>
+              <div class="cat-amount">£61</div>
+            </div>
+          </div>
+
+          <div class="ask-cait">
+            <div class="ask-cait-text">
+              <div class="ask-cait-label">ASK CAIT</div>
+              <div class="ask-cait-prompt">Can I afford this?</div>
+            </div>
+            <div class="ask-cait-arrow">↗</div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <div class="nav-icon">⊞</div>
+            <div class="nav-dot"></div>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">↕</div>
+            <div class="nav-label">Transactions</div>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">💬</div>
+            <div class="nav-label">Ask Cait</div>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">⚙</div>
+            <div class="nav-label">Settings</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 2: ASK CAIT ── -->
+  <div class="screen-container">
+    <span class="screen-tag">Ask Cait</span>
+    <div class="phone-shell">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-icons"><span>●●●</span></div>
+        </div>
+        <div class="ask-screen">
+          <div class="ask-header">
+            <div class="ask-title">Ask Cait</div>
+            <div class="cait-badge">CAIT</div>
+          </div>
+          <div class="ask-subtitle">Your brutally honest money friend</div>
+
+          <div class="chat-bubbles">
+            <div class="bubble-cait">
+              <div class="cait-avatar-sm">C</div>
+              <div class="bubble-cait-text">Hey. What do you need to know? I've seen your bank statements. No secrets between us. 👀</div>
+            </div>
+            <div class="bubble-user">
+              <div class="bubble-user-text">Can I afford Nandos tonight?</div>
+            </div>
+            <div class="bubble-cait">
+              <div class="cait-avatar-sm">C</div>
+              <div class="bubble-cait-text">You've got <strong style="color:#e8785c;">£157</strong> left this month. So yes — but this would be your 5th Nandos. That's between you and your conscience. 🍗</div>
+            </div>
+          </div>
+
+          <div class="suggested-prompts">
+            <div class="prompt-chip">Am I being stupid this month?</div>
+            <div class="prompt-chip">How bad was I last week?</div>
+            <div class="prompt-chip">What's draining my account?</div>
+          </div>
+        </div>
+        <div class="chat-input">
+          <div class="chat-input-text">Ask me anything...</div>
+          <div class="send-btn">↑</div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <div class="nav-icon">⊞</div>
+            <div class="nav-label">Home</div>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">↕</div>
+            <div class="nav-label">Transactions</div>
+          </div>
+          <div class="nav-item active">
+            <div class="nav-icon">💬</div>
+            <div class="nav-dot"></div>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">⚙</div>
+            <div class="nav-label">Settings</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 3: TRANSACTION DETAIL ── -->
+  <div class="screen-container">
+    <span class="screen-tag">Transaction</span>
+    <div class="phone-shell">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-icons"><span>●●●</span></div>
+        </div>
+        <div class="txn-screen">
+          <div class="back-btn">← Transactions</div>
+
+          <div class="txn-hero">
+            <div class="txn-merchant-icon">🍗</div>
+            <div class="txn-merchant">Nandos</div>
+            <div class="txn-amount">−£18.50</div>
+            <div class="txn-date">Today · 7:34pm</div>
+          </div>
+
+          <div class="txn-meta">
+            <div class="txn-row">
+              <span class="txn-row-label">Category</span>
+              <span class="txn-row-value">🍕 Eating out</span>
+            </div>
+            <div class="txn-row">
+              <span class="txn-row-label">Account</span>
+              <span class="txn-row-value">Monzo ••4521</span>
+            </div>
+            <div class="txn-row">
+              <span class="txn-row-label">This month at Nandos</span>
+              <span class="txn-row-value" style="color:#e8785c;">5 visits · £87.50</span>
+            </div>
+          </div>
+
+          <div class="cait-nudge">
+            <div class="cait-nudge-label">✦ CAIT says</div>
+            <div class="cait-nudge-text">Fifth time here this month. Honestly? Respect. But that's £87.50 on chicken. Just so you know.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="color:rgba(255,255,255,0.3); font-size:11px; text-align:center; max-width:500px; line-height:1.6;">
+  Palette: #fff9f7 (base) · #e8785c (primary) · #c96a50 (secondary) · #1a0a06 (dark) <br>
+  Type: DM Serif Display (balance) · Plus Jakarta Sans (everything else)
+</div>
+
+</body>
+</html>

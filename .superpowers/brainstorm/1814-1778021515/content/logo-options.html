@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAIT Logo Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@800&family=Space+Grotesk:wght@700&family=Syne:wght@800&family=DM+Sans:wght@900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f7f4f0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    padding: 40px 32px;
+    min-height: 100vh;
+  }
+
+  h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #2d2420;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #9b7e6a;
+    margin-bottom: 40px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #b8a89a;
+    margin-bottom: 20px;
+    margin-top: 36px;
+  }
+
+  .logo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .logo-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    padding: 20px 12px;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .logo-tile:hover { background: rgba(155,126,106,0.06); }
+  .logo-tile.selected { border-color: #9b7e6a; background: rgba(155,126,106,0.08); }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 56px;
+    border-radius: 14px;
+    color: white;
+    user-select: none;
+  }
+
+  .badge-warm  { background: #9b7e6a; }
+  .badge-coral { background: #e8785c; }
+  .badge-dark  { background: #2d2420; }
+
+  /* Font variants */
+  .f-jakarta  { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 26px; letter-spacing: 1px; }
+  .f-space    { font-family: 'Space Grotesk', sans-serif;    font-weight: 700; font-size: 26px; letter-spacing: 1px; }
+  .f-syne     { font-family: 'Syne', sans-serif;             font-weight: 800; font-size: 24px; letter-spacing: 2px; }
+  .f-dm-sans  { font-family: 'DM Sans', sans-serif;          font-weight: 900; font-size: 28px; letter-spacing: 0.5px; }
+  .f-unbounded{ font-family: 'Unbounded', sans-serif;        font-weight: 700; font-size: 18px; letter-spacing: 0.5px; }
+  .f-serif    { font-family: 'DM Serif Display', serif;      font-weight: 400; font-size: 28px; letter-spacing: 0.5px; }
+
+  .tile-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #7a6355;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tile-sub {
+    font-size: 10px;
+    color: #b8a89a;
+    text-align: center;
+    margin-top: 2px;
+  }
+</style>
+<script>
+  function toggleSelect(el) {
+    const wasSelected = el.classList.contains('selected');
+    document.querySelectorAll('.logo-tile').forEach(t => t.classList.remove('selected'));
+    if (!wasSelected) {
+      el.classList.add('selected');
+      if (window.recordChoice) window.recordChoice(el.dataset.choice, el.querySelector('.tile-label').textContent);
+    }
+  }
+</script>
+</head>
+<body>
+
+<h2>CAIT Logo — Type Options</h2>
+<p class="subtitle">Same shape across all. Click one to select. Backgrounds: Warm Stone / Coral / Dark.</p>
+
+<!-- PLUS JAKARTA SANS -->
+<div class="section-label">A — Plus Jakarta Sans ExtraBold (brand font)</div>
+<div class="logo-grid">
+  <div class="logo-tile" data-choice="a1" onclick="toggleSelect(this)">
+    <div class="badge badge-warm f-jakarta">CAIT</div>
+    <div>
+      <div class="tile-label">A1 — Warm Stone</div>
+      <div class="tile-sub">Plus Jakarta Sans 800</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="a2" onclick="toggleSelect(this)">
+    <div class="badge badge-coral f-jakarta">CAIT</div>
+    <div>
+      <div class="tile-label">A2 — Coral</div>
+      <div class="tile-sub">Plus Jakarta Sans 800</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="a3" onclick="toggleSelect(this)">
+    <div class="badge badge-dark f-jakarta">CAIT</div>
+    <div>
+      <div class="tile-label">A3 — Dark</div>
+      <div class="tile-sub">Plus Jakarta Sans 800</div>
+    </div>
+  </div>
+</div>
+
+<!-- SPACE GROTESK -->
+<div class="section-label">B — Space Grotesk Bold (geometric)</div>
+<div class="logo-grid">
+  <div class="logo-tile" data-choice="b1" onclick="toggleSelect(this)">
+    <div class="badge badge-warm f-space">CAIT</div>
+    <div>
+      <div class="tile-label">B1 — Warm Stone</div>
+      <div class="tile-sub">Space Grotesk 700</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="b2" onclick="toggleSelect(this)">
+    <div class="badge badge-coral f-space">CAIT</div>
+    <div>
+      <div class="tile-label">B2 — Coral</div>
+      <div class="tile-sub">Space Grotesk 700</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="b3" onclick="toggleSelect(this)">
+    <div class="badge badge-dark f-space">CAIT</div>
+    <div>
+      <div class="tile-label">B3 — Dark</div>
+      <div class="tile-sub">Space Grotesk 700</div>
+    </div>
+  </div>
+</div>
+
+<!-- SYNE -->
+<div class="section-label">C — Syne ExtraBold (wide, striking)</div>
+<div class="logo-grid">
+  <div class="logo-tile" data-choice="c1" onclick="toggleSelect(this)">
+    <div class="badge badge-warm f-syne">CAIT</div>
+    <div>
+      <div class="tile-label">C1 — Warm Stone</div>
+      <div class="tile-sub">Syne 800</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="c2" onclick="toggleSelect(this)">
+    <div class="badge badge-coral f-syne">CAIT</div>
+    <div>
+      <div class="tile-label">C2 — Coral</div>
+      <div class="tile-sub">Syne 800</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="c3" onclick="toggleSelect(this)">
+    <div class="badge badge-dark f-syne">CAIT</div>
+    <div>
+      <div class="tile-label">C3 — Dark</div>
+      <div class="tile-sub">Syne 800</div>
+    </div>
+  </div>
+</div>
+
+<!-- DM SANS -->
+<div class="section-label">D — DM Sans Black (clean, heavy)</div>
+<div class="logo-grid">
+  <div class="logo-tile" data-choice="d1" onclick="toggleSelect(this)">
+    <div class="badge badge-warm f-dm-sans">CAIT</div>
+    <div>
+      <div class="tile-label">D1 — Warm Stone</div>
+      <div class="tile-sub">DM Sans 900</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="d2" onclick="toggleSelect(this)">
+    <div class="badge badge-coral f-dm-sans">CAIT</div>
+    <div>
+      <div class="tile-label">D2 — Coral</div>
+      <div class="tile-sub">DM Sans 900</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="d3" onclick="toggleSelect(this)">
+    <div class="badge badge-dark f-dm-sans">CAIT</div>
+    <div>
+      <div class="tile-label">D3 — Dark</div>
+      <div class="tile-sub">DM Sans 900</div>
+    </div>
+  </div>
+</div>
+
+<!-- UNBOUNDED -->
+<div class="section-label">E — Unbounded Bold (compact, modern)</div>
+<div class="logo-grid">
+  <div class="logo-tile" data-choice="e1" onclick="toggleSelect(this)">
+    <div class="badge badge-warm f-unbounded">CAIT</div>
+    <div>
+      <div class="tile-label">E1 — Warm Stone</div>
+      <div class="tile-sub">Unbounded 700</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="e2" onclick="toggleSelect(this)">
+    <div class="badge badge-coral f-unbounded">CAIT</div>
+    <div>
+      <div class="tile-label">E2 — Coral</div>
+      <div class="tile-sub">Unbounded 700</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="e3" onclick="toggleSelect(this)">
+    <div class="badge badge-dark f-unbounded">CAIT</div>
+    <div>
+      <div class="tile-label">E3 — Dark</div>
+      <div class="tile-sub">Unbounded 700</div>
+    </div>
+  </div>
+</div>
+
+<!-- DM SERIF -->
+<div class="section-label">F — DM Serif Display (brand serif, editorial)</div>
+<div class="logo-grid">
+  <div class="logo-tile" data-choice="f1" onclick="toggleSelect(this)">
+    <div class="badge badge-warm f-serif">CAIT</div>
+    <div>
+      <div class="tile-label">F1 — Warm Stone</div>
+      <div class="tile-sub">DM Serif Display</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="f2" onclick="toggleSelect(this)">
+    <div class="badge badge-coral f-serif">CAIT</div>
+    <div>
+      <div class="tile-label">F2 — Coral</div>
+      <div class="tile-sub">DM Serif Display</div>
+    </div>
+  </div>
+  <div class="logo-tile" data-choice="f3" onclick="toggleSelect(this)">
+    <div class="badge badge-dark f-serif">CAIT</div>
+    <div>
+      <div class="tile-label">F3 — Dark</div>
+      <div class="tile-sub">DM Serif Display</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

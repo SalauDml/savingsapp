@@ -1,0 +1,141 @@
+<h2>Colour + voice together</h2>
+<p class="subtitle">Same design system. The difference is in what it <em>says</em>. This is what "funny and non-judgmental" actually looks like in an app.</p>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+.screens { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+
+.screen-wrap {
+  cursor: pointer;
+  border-radius: 16px;
+  border: 2px solid transparent;
+  padding: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.screen-wrap:hover { border-color: #e8785c; }
+.screen-wrap.selected { border-color: #e8785c; box-shadow: 0 0 0 3px rgba(232,120,92,0.15); }
+
+.phone {
+  background: #fff9f7;
+  border-radius: 12px;
+  padding: 14px 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+}
+
+.screen-label {
+  text-align: center;
+  margin-top: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 0 4px;
+}
+.screen-label h3 { margin: 0 0 3px; font-size: 12px; font-weight: 700; color: #1a0a06; }
+.screen-label p { margin: 0; font-size: 11px; color: #999; }
+</style>
+
+<div class="screens">
+
+  <!-- Dashboard -->
+  <div class="screen-wrap" data-choice="dashboard" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div style="color:#c96a50; font-size:9px; font-weight:700; margin-bottom:5px;">Hey Sam 👋</div>
+      <div style="font-family:'DM Serif Display',serif; font-size:26px; color:#1a0a06; letter-spacing:-0.5px; line-height:1; margin-bottom:1px;">£342.80</div>
+      <div style="color:#c96a50; font-size:8px; font-weight:600; margin-bottom:12px;">spent this month</div>
+
+      <!-- Insight card - funny, non-judgmental -->
+      <div style="background:#fff; border-radius:10px; padding:10px 11px; margin-bottom:8px; box-shadow:0 1px 6px rgba(201,106,80,0.08);">
+        <div style="color:#c96a50; font-size:8px; font-weight:700; letter-spacing:0.4px; margin-bottom:4px;">✦ WORTH KNOWING</div>
+        <div style="color:#1a0a06; font-size:10px; line-height:1.5;">You've spent <strong>£47</strong> on coffee this month. That's, uh… a lot of coffee. No judgement.</div>
+      </div>
+
+      <div style="display:flex; gap:6px; margin-bottom:8px;">
+        <div style="background:#fff; border-radius:8px; padding:8px 5px; flex:1; text-align:center; box-shadow:0 1px 5px rgba(201,106,80,0.06);">
+          <div style="font-size:12px; margin-bottom:2px;">🍕</div>
+          <div style="font-size:11px; font-weight:700; color:#1a0a06;">£128</div>
+          <div style="color:#c96a50; font-size:7px; margin-top:1px;">Food</div>
+        </div>
+        <div style="background:#fff; border-radius:8px; padding:8px 5px; flex:1; text-align:center; box-shadow:0 1px 5px rgba(201,106,80,0.06);">
+          <div style="font-size:12px; margin-bottom:2px;">🚌</div>
+          <div style="font-size:11px; font-weight:700; color:#1a0a06;">£74</div>
+          <div style="color:#c96a50; font-size:7px; margin-top:1px;">Travel</div>
+        </div>
+        <div style="background:#fff; border-radius:8px; padding:8px 5px; flex:1; text-align:center; box-shadow:0 1px 5px rgba(201,106,80,0.06);">
+          <div style="font-size:12px; margin-bottom:2px;">🛍</div>
+          <div style="font-size:11px; font-weight:700; color:#1a0a06;">£61</div>
+          <div style="color:#c96a50; font-size:7px; margin-top:1px;">Shopping</div>
+        </div>
+      </div>
+
+      <div style="background:#1a0a06; border-radius:8px; padding:9px 11px; display:flex; align-items:center; gap:6px;">
+        <span style="font-size:11px;">💬</span>
+        <span style="color:#fde8e3; font-size:9px; font-weight:600;">Can I afford this?</span>
+      </div>
+    </div>
+    <div class="screen-label">
+      <h3>Dashboard</h3>
+      <p>"No judgement." — friendly, self-aware</p>
+    </div>
+  </div>
+
+  <!-- NLQ / Ask screen -->
+  <div class="screen-wrap" data-choice="nlq" onclick="toggleSelect(this)">
+    <div class="phone">
+      <div style="color:#1a0a06; font-size:10px; font-weight:800; margin-bottom:12px;">Ask anything 💬</div>
+
+      <!-- suggested prompts - funny -->
+      <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:12px;">
+        <div style="background:#fff; border-radius:8px; padding:8px 10px; color:#1a0a06; font-size:9px; border: 1px solid #fde8e3;">Can I afford Nandos tonight?</div>
+        <div style="background:#fff; border-radius:8px; padding:8px 10px; color:#1a0a06; font-size:9px; border: 1px solid #fde8e3;">How bad was I last month?</div>
+        <div style="background:#fff; border-radius:8px; padding:8px 10px; color:#1a0a06; font-size:9px; border: 1px solid #fde8e3;">Am I a coffee addict?</div>
+      </div>
+
+      <!-- conversation -->
+      <div style="display:flex; justify-content:flex-end; margin-bottom:6px;">
+        <div style="background:#e8785c; border-radius:10px 10px 2px 10px; padding:7px 10px; color:#fff; font-size:9px; max-width:80%;">How much did I spend eating out?</div>
+      </div>
+      <div style="display:flex; margin-bottom:10px;">
+        <div style="background:#fff; border-radius:10px 10px 10px 2px; padding:8px 10px; color:#1a0a06; font-size:9px; max-width:85%; box-shadow:0 1px 4px rgba(201,106,80,0.1); line-height:1.5;"><strong>£128</strong> across 14 visits. Your most visited spot was Nandos (4 times). Living your best life.</div>
+      </div>
+
+      <div style="background:#f5f0ee; border-radius:8px; padding:8px 10px; display:flex; align-items:center; gap:6px;">
+        <span style="color:#999; font-size:9px; flex:1;">Ask me anything...</span>
+        <div style="width:22px; height:22px; background:#e8785c; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+          <span style="color:#fff; font-size:10px;">↑</span>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label">
+      <h3>Ask screen</h3>
+      <p>"Living your best life." — warm, funny, never harsh</p>
+    </div>
+  </div>
+
+  <!-- Empty state / first load -->
+  <div class="screen-wrap" data-choice="empty" onclick="toggleSelect(this)">
+    <div class="phone" style="display:flex; flex-direction:column; justify-content:space-between; min-height:220px;">
+
+      <div style="color:#1a0a06; font-size:10px; font-weight:800; margin-bottom:12px;">Transactions</div>
+
+      <!-- empty state - funny -->
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px; text-align:center;">
+        <div style="font-size:32px; margin-bottom:8px;">🫙</div>
+        <div style="color:#1a0a06; font-size:11px; font-weight:700; margin-bottom:4px;">Nothing here yet</div>
+        <div style="color:#999; font-size:9px; line-height:1.5; max-width:140px;">Either you haven't spent anything, or the sync is still catching up. We'll go with the optimistic version.</div>
+      </div>
+
+      <!-- overspend notification - non-judgmental -->
+      <div style="background:#fff; border-radius:10px; padding:10px 11px; box-shadow:0 1px 6px rgba(201,106,80,0.08); border-left:3px solid #e8785c;">
+        <div style="color:#1a0a06; font-size:9px; font-weight:700; margin-bottom:2px;">Heads up 👀</div>
+        <div style="color:#666; font-size:9px; line-height:1.4;">You're spending more on eating out than last month. Still within budget though, so… you're fine.</div>
+      </div>
+    </div>
+    <div class="screen-label">
+      <h3>Empty state</h3>
+      <p>"We'll go with the optimistic version." — self-aware humour</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="font-style:italic; margin-top:4px;">The colour is coral. But the personality is in the words — "No judgement." "Living your best life." "We'll go with the optimistic version." That's what makes it feel friendly and funny. Does this feel like your app?</p>

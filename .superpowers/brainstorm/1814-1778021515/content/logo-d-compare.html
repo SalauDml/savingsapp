@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAIT — D comparison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f7f4f0; font-family: 'Plus Jakarta Sans', sans-serif; padding: 48px 32px; }
+
+  h2 { font-size: 18px; font-weight: 800; color: #2d2420; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #9b7e6a; margin-bottom: 52px; }
+
+  /* ── Three-up comparison ── */
+  .compare-row {
+    display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start;
+    margin-bottom: 64px;
+  }
+
+  .compare-col {
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+    flex: 1; min-width: 180px;
+  }
+
+  /* Badge */
+  .badge-lg {
+    display: flex; align-items: center; justify-content: center;
+    width: 180px; height: 80px; border-radius: 20px; color: white;
+    font-family: 'DM Sans', sans-serif; font-weight: 900;
+    font-size: 36px; letter-spacing: 0.5px;
+    cursor: pointer; transition: transform 0.12s;
+  }
+  .badge-lg:hover { transform: scale(1.03); }
+
+  .bg-warm  { background: #9b7e6a; }
+  .bg-deep  { background: #7a6355; }
+  .bg-dark  { background: #2d2420; }
+
+  .col-label {
+    font-size: 11px; font-weight: 800; color: #7a6355;
+    text-transform: uppercase; letter-spacing: 0.6px; margin-top: 16px;
+  }
+  .col-sub {
+    font-size: 10px; color: #b8a89a; margin-top: 3px;
+  }
+  .col-note {
+    font-size: 11px; color: #9b7e6a; margin-top: 6px; text-align: center;
+    max-width: 160px; line-height: 1.5;
+  }
+
+  .divider { height: 1px; background: #e8ddd5; margin: 0 0 52px; }
+
+  /* ── Phone row ── */
+  .phone-row { display: flex; gap: 28px; flex-wrap: wrap; }
+
+  .phone {
+    width: 200px; background: #1a1a1a; border-radius: 34px;
+    padding: 16px 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  }
+  .phone-bar { width: 52px; height: 4px; background: #333; border-radius: 2px; margin: 0 auto 12px; }
+  .phone-status { display: flex; justify-content: space-between; padding: 0 4px; margin-bottom: 16px; }
+  .phone-time { font-size: 10px; font-weight: 700; color: #fff; }
+  .phone-signal { font-size: 10px; color: #fff; }
+
+  .icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 0 2px; }
+  .app-icon { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .icon-img {
+    width: 44px; height: 44px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 800; font-size: 10px;
+  }
+  .icon-label { font-size: 7px; color: rgba(255,255,255,0.65); text-align: center; }
+
+  .cait-icon {
+    font-family: 'DM Sans', sans-serif; font-weight: 900;
+    font-size: 11px; letter-spacing: 0.2px;
+  }
+  .cait-label { color: #9b7e6a !important; font-weight: 800 !important; font-size: 7px !important; }
+
+  .d1 { background: #4285F4; }
+  .d2 { background: #34A853; }
+  .d3 { background: #EA4335; }
+  .d4 { background: #1DB954; font-size: 12px !important; }
+  .d5 { background: #FF6900; }
+  .d6 { background: #0F62FE; }
+  .d7 { background: #FBBC05; color: #333 !important; }
+
+  .phone-col { display: flex; flex-direction: column; align-items: center; }
+  .phone-label { font-size: 10px; font-weight: 800; color: #7a6355; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 12px; }
+  .phone-sub { font-size: 9px; color: #b8a89a; margin-top: 2px; }
+
+  /* selected ring */
+  .compare-col.selected .badge-lg { outline: 3px solid #9b7e6a; outline-offset: 4px; border-radius: 22px; }
+</style>
+</head>
+<body>
+
+<h2>D — DM Sans Black: three backgrounds</h2>
+<p class="subtitle">Same font, same shape. Only the background changes.</p>
+
+<!-- ── Badge comparison ── -->
+<div class="compare-row">
+  <div class="compare-col" id="col-warm">
+    <div class="badge-lg bg-warm" onclick="pick('warm')">CAIT</div>
+    <div class="col-label">D1 — Warm</div>
+    <div class="col-sub">#9b7e6a</div>
+    <div class="col-note">Original. Matches the app's accent exactly.</div>
+  </div>
+
+  <div class="compare-col" id="col-deep">
+    <div class="badge-lg bg-deep" onclick="pick('deep')">CAIT</div>
+    <div class="col-label">D2 — Deep ★</div>
+    <div class="col-sub">#7a6355</div>
+    <div class="col-note">Your current pick. Richer, more deliberate.</div>
+  </div>
+
+  <div class="compare-col" id="col-dark">
+    <div class="badge-lg bg-dark" onclick="pick('dark')">CAIT</div>
+    <div class="col-label">D-dark — New</div>
+    <div class="col-sub">#2d2420</div>
+    <div class="col-note">Same as the CAIT insight card. Maximum contrast.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Phone icons ── -->
+<div class="phone-row">
+
+  <div class="phone-col">
+    <div class="phone">
+      <div class="phone-bar"></div>
+      <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-signal">●●●</span></div>
+      <div class="icon-grid">
+        <div class="app-icon"><div class="icon-img d1">G</div><div class="icon-label">Maps</div></div>
+        <div class="app-icon"><div class="icon-img d2">M</div><div class="icon-label">Mail</div></div>
+        <div class="app-icon"><div class="icon-img bg-warm cait-icon">CAIT</div><div class="icon-label cait-label">CAIT</div></div>
+        <div class="app-icon"><div class="icon-img d3">S</div><div class="icon-label">Store</div></div>
+        <div class="app-icon"><div class="icon-img d4">♪</div><div class="icon-label">Music</div></div>
+        <div class="app-icon"><div class="icon-img d5">P</div><div class="icon-label">Photos</div></div>
+        <div class="app-icon"><div class="icon-img d6">N</div><div class="icon-label">Notes</div></div>
+        <div class="app-icon"><div class="icon-img d7">C</div><div class="icon-label">Clock</div></div>
+      </div>
+    </div>
+    <div class="phone-label">D1 — Warm</div>
+    <div class="phone-sub">#9b7e6a</div>
+  </div>
+
+  <div class="phone-col">
+    <div class="phone">
+      <div class="phone-bar"></div>
+      <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-signal">●●●</span></div>
+      <div class="icon-grid">
+        <div class="app-icon"><div class="icon-img d1">G</div><div class="icon-label">Maps</div></div>
+        <div class="app-icon"><div class="icon-img d2">M</div><div class="icon-label">Mail</div></div>
+        <div class="app-icon"><div class="icon-img bg-deep cait-icon">CAIT</div><div class="icon-label cait-label">CAIT</div></div>
+        <div class="app-icon"><div class="icon-img d3">S</div><div class="icon-label">Store</div></div>
+        <div class="app-icon"><div class="icon-img d4">♪</div><div class="icon-label">Music</div></div>
+        <div class="app-icon"><div class="icon-img d5">P</div><div class="icon-label">Photos</div></div>
+        <div class="app-icon"><div class="icon-img d6">N</div><div class="icon-label">Notes</div></div>
+        <div class="app-icon"><div class="icon-img d7">C</div><div class="icon-label">Clock</div></div>
+      </div>
+    </div>
+    <div class="phone-label">D2 — Deep ★</div>
+    <div class="phone-sub">#7a6355</div>
+  </div>
+
+  <div class="phone-col">
+    <div class="phone">
+      <div class="phone-bar"></div>
+      <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-signal">●●●</span></div>
+      <div class="icon-grid">
+        <div class="app-icon"><div class="icon-img d1">G</div><div class="icon-label">Maps</div></div>
+        <div class="app-icon"><div class="icon-img d2">M</div><div class="icon-label">Mail</div></div>
+        <div class="app-icon"><div class="icon-img bg-dark cait-icon">CAIT</div><div class="icon-label cait-label">CAIT</div></div>
+        <div class="app-icon"><div class="icon-img d3">S</div><div class="icon-label">Store</div></div>
+        <div class="app-icon"><div class="icon-img d4">♪</div><div class="icon-label">Music</div></div>
+        <div class="app-icon"><div class="icon-img d5">P</div><div class="icon-label">Photos</div></div>
+        <div class="app-icon"><div class="icon-img d6">N</div><div class="icon-label">Notes</div></div>
+        <div class="app-icon"><div class="icon-img d7">C</div><div class="icon-label">Clock</div></div>
+      </div>
+    </div>
+    <div class="phone-label">D-dark — New</div>
+    <div class="phone-sub">#2d2420</div>
+  </div>
+
+</div>
+
+<script>
+  function pick(id) {
+    document.querySelectorAll('.compare-col').forEach(c => c.classList.remove('selected'));
+    document.getElementById('col-' + id).classList.add('selected');
+    if (window.recordChoice) window.recordChoice(id, 'D-' + id);
+  }
+</script>
+
+</body>
+</html>

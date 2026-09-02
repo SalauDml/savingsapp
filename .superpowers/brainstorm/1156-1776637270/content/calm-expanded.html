@@ -1,0 +1,259 @@
+<h2>CAIT — A, B, D Full Screen</h2>
+<p class="subtitle">Full home screen for each direction. Click the one that feels right.</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px;">
+
+  <!-- A: Warm Stone -->
+  <div class="option" data-choice="a" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:24px;overflow:hidden;border:3px solid transparent;">
+    <div style="background:#f7f4f0;border-radius:21px;overflow:hidden;font-family:system-ui,sans-serif;">
+
+      <!-- Status bar -->
+      <div style="background:#f7f4f0;padding:10px 18px 0;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:9px;font-weight:700;color:#2d2420;">9:41</div>
+        <div style="font-size:9px;color:#9b8070;">▪▪▪</div>
+      </div>
+
+      <!-- Header -->
+      <div style="padding:18px 18px 0;">
+        <div style="font-size:11px;font-weight:600;color:#9b7e6a;margin-bottom:3px;letter-spacing:0.03em;">Good evening</div>
+        <div style="font-family:'Georgia',serif;font-size:38px;color:#2d2420;line-height:1.05;margin-bottom:2px;">£342.80</div>
+        <div style="font-size:9px;color:#b8a89a;margin-bottom:0;">March 2026</div>
+      </div>
+
+      <!-- CAIT Card -->
+      <div style="margin:14px 18px 0;background:#2d2420;border-radius:14px;padding:14px 16px;">
+        <div style="font-size:7px;color:#c4a882;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">✦ CAIT says</div>
+        <div style="font-size:12px;color:#f0e8df;line-height:1.55;">You've spent <span style="color:#c4a882;font-weight:700;">£87.50</span> on eating out this week. Still in budget — but only just.</div>
+      </div>
+
+      <!-- Categories -->
+      <div style="margin:16px 18px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#2d2420;">Where it went</div>
+          <div style="font-size:9px;color:#9b7e6a;font-weight:600;">See all →</div>
+        </div>
+        <!-- Row -->
+        <div style="background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:9px;box-shadow:0 1px 6px rgba(155,126,106,0.08);">
+          <div style="width:28px;height:28px;background:#e8ddd5;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;">🍔</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:#2d2420;margin-bottom:4px;">Eating out</div>
+            <div style="height:3px;background:#e8ddd5;border-radius:2px;"><div style="width:68%;height:100%;background:#9b7e6a;border-radius:2px;"></div></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#2d2420;">£87.50</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:9px;box-shadow:0 1px 6px rgba(155,126,106,0.08);">
+          <div style="width:28px;height:28px;background:#e8ddd5;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;">🚇</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:#2d2420;margin-bottom:4px;">Transport</div>
+            <div style="height:3px;background:#e8ddd5;border-radius:2px;"><div style="width:42%;height:100%;background:#9b7e6a;border-radius:2px;"></div></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#2d2420;">£42.00</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:9px;box-shadow:0 1px 6px rgba(155,126,106,0.08);">
+          <div style="width:28px;height:28px;background:#e8ddd5;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;">🛒</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:#2d2420;margin-bottom:4px;">Groceries</div>
+            <div style="height:3px;background:#e8ddd5;border-radius:2px;"><div style="width:55%;height:100%;background:#9b7e6a;border-radius:2px;"></div></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#2d2420;">£61.30</div>
+        </div>
+      </div>
+
+      <!-- Ask CAIT Button -->
+      <div style="margin:14px 18px 0;background:#9b7e6a;border-radius:12px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:7px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.65);margin-bottom:2px;">ASK CAIT</div>
+          <div style="font-size:12px;font-weight:700;color:#fff;">Can I afford this?</div>
+        </div>
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;">↗</div>
+      </div>
+
+      <!-- Bottom Nav -->
+      <div style="margin-top:14px;padding:10px 18px 14px;border-top:1px solid rgba(155,126,106,0.1);display:flex;justify-content:space-around;background:#fff;">
+        <div style="text-align:center;">
+          <div style="font-size:16px;">🏠</div>
+          <div style="font-size:7px;font-weight:700;color:#9b7e6a;margin-top:2px;">Home</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;opacity:0.35;">📋</div>
+          <div style="font-size:7px;font-weight:600;color:#ccc;margin-top:2px;">Transactions</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;opacity:0.35;">💬</div>
+          <div style="font-size:7px;font-weight:600;color:#ccc;margin-top:2px;">Ask CAIT</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;opacity:0.35;">⚙️</div>
+          <div style="font-size:7px;font-weight:600;color:#ccc;margin-top:2px;">Settings</div>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;padding:10px 0 4px;font-weight:700;font-size:13px;color:#2d2420;">A — Warm Stone</div>
+  </div>
+
+  <!-- B: Soft Indigo -->
+  <div class="option" data-choice="b" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:24px;overflow:hidden;border:3px solid transparent;">
+    <div style="background:#f4f4f9;border-radius:21px;overflow:hidden;font-family:system-ui,sans-serif;">
+
+      <div style="background:#f4f4f9;padding:10px 18px 0;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:9px;font-weight:700;color:#1e1b4b;">9:41</div>
+        <div style="font-size:9px;color:#a5a3c2;">▪▪▪</div>
+      </div>
+
+      <div style="padding:18px 18px 0;">
+        <div style="font-size:11px;font-weight:600;color:#6366f1;margin-bottom:3px;letter-spacing:0.03em;">Good evening</div>
+        <div style="font-family:'Georgia',serif;font-size:38px;color:#1e1b4b;line-height:1.05;margin-bottom:2px;">£342.80</div>
+        <div style="font-size:9px;color:#a5a3c2;margin-bottom:0;">March 2026</div>
+      </div>
+
+      <div style="margin:14px 18px 0;background:#1e1b4b;border-radius:14px;padding:14px 16px;">
+        <div style="font-size:7px;color:#818cf8;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">✦ CAIT says</div>
+        <div style="font-size:12px;color:#e0e0f5;line-height:1.55;">You've spent <span style="color:#818cf8;font-weight:700;">£87.50</span> on eating out this week. Still in budget — but only just.</div>
+      </div>
+
+      <div style="margin:16px 18px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#1e1b4b;">Where it went</div>
+          <div style="font-size:9px;color:#6366f1;font-weight:600;">See all →</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:9px;box-shadow:0 1px 6px rgba(99,102,241,0.08);">
+          <div style="width:28px;height:28px;background:#e0e0f5;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;">🍔</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:#1e1b4b;margin-bottom:4px;">Eating out</div>
+            <div style="height:3px;background:#e0e0f5;border-radius:2px;"><div style="width:68%;height:100%;background:#6366f1;border-radius:2px;"></div></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#1e1b4b;">£87.50</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:9px;box-shadow:0 1px 6px rgba(99,102,241,0.08);">
+          <div style="width:28px;height:28px;background:#e0e0f5;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;">🚇</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:#1e1b4b;margin-bottom:4px;">Transport</div>
+            <div style="height:3px;background:#e0e0f5;border-radius:2px;"><div style="width:42%;height:100%;background:#6366f1;border-radius:2px;"></div></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#1e1b4b;">£42.00</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:9px;box-shadow:0 1px 6px rgba(99,102,241,0.08);">
+          <div style="width:28px;height:28px;background:#e0e0f5;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;">🛒</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:#1e1b4b;margin-bottom:4px;">Groceries</div>
+            <div style="height:3px;background:#e0e0f5;border-radius:2px;"><div style="width:55%;height:100%;background:#6366f1;border-radius:2px;"></div></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#1e1b4b;">£61.30</div>
+        </div>
+      </div>
+
+      <div style="margin:14px 18px 0;background:#6366f1;border-radius:12px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:7px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.65);margin-bottom:2px;">ASK CAIT</div>
+          <div style="font-size:12px;font-weight:700;color:#fff;">Can I afford this?</div>
+        </div>
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;">↗</div>
+      </div>
+
+      <div style="margin-top:14px;padding:10px 18px 14px;border-top:1px solid rgba(99,102,241,0.1);display:flex;justify-content:space-around;background:#fff;">
+        <div style="text-align:center;">
+          <div style="font-size:16px;">🏠</div>
+          <div style="font-size:7px;font-weight:700;color:#6366f1;margin-top:2px;">Home</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;opacity:0.35;">📋</div>
+          <div style="font-size:7px;font-weight:600;color:#ccc;margin-top:2px;">Transactions</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;opacity:0.35;">💬</div>
+          <div style="font-size:7px;font-weight:600;color:#ccc;margin-top:2px;">Ask CAIT</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;opacity:0.35;">⚙️</div>
+          <div style="font-size:7px;font-weight:600;color:#ccc;margin-top:2px;">Settings</div>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;padding:10px 0 4px;font-weight:700;font-size:13px;color:#1e1b4b;">B — Soft Indigo</div>
+  </div>
+
+  <!-- D: Dusk -->
+  <div class="option" data-choice="d" onclick="toggleSelect(this)" style="cursor:pointer;border-radius:24px;overflow:hidden;border:3px solid transparent;">
+    <div style="background:#f5f2f7;border-radius:21px;overflow:hidden;font-family:system-ui,sans-serif;">
+
+      <div style="background:#f5f2f7;padding:10px 18px 0;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:9px;font-weight:700;color:#1e1530;">9:41</div>
+        <div style="font-size:9px;color:#b0a0cc;">▪▪▪</div>
+      </div>
+
+      <div style="padding:18px 18px 0;">
+        <div style="font-size:11px;font-weight:600;color:#7c5cbf;margin-bottom:3px;letter-spacing:0.03em;">Good evening</div>
+        <div style="font-family:'Georgia',serif;font-size:38px;color:#1e1530;line-height:1.05;margin-bottom:2px;">£342.80</div>
+        <div style="font-size:9px;color:#b0a0cc;margin-bottom:0;">March 2026</div>
+      </div>
+
+      <div style="margin:14px 18px 0;background:#1e1530;border-radius:14px;padding:14px 16px;">
+        <div style="font-size:7px;color:#b08de8;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">✦ CAIT says</div>
+        <div style="font-size:12px;color:#ede8f8;line-height:1.55;">You've spent <span style="color:#b08de8;font-weight:700;">£87.50</span> on eating out this week. Still in budget — but only just.</div>
+      </div>
+
+      <div style="margin:16px 18px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#1e1530;">Where it went</div>
+          <div style="font-size:9px;color:#7c5cbf;font-weight:600;">See all →</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:9px;box-shadow:0 1px 6px rgba(124,92,191,0.08);">
+          <div style="width:28px;height:28px;background:#ede8f8;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;">🍔</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:#1e1530;margin-bottom:4px;">Eating out</div>
+            <div style="height:3px;background:#ede8f8;border-radius:2px;"><div style="width:68%;height:100%;background:#7c5cbf;border-radius:2px;"></div></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#1e1530;">£87.50</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:9px;box-shadow:0 1px 6px rgba(124,92,191,0.08);">
+          <div style="width:28px;height:28px;background:#ede8f8;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;">🚇</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:#1e1530;margin-bottom:4px;">Transport</div>
+            <div style="height:3px;background:#ede8f8;border-radius:2px;"><div style="width:42%;height:100%;background:#7c5cbf;border-radius:2px;"></div></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#1e1530;">£42.00</div>
+        </div>
+        <div style="background:#fff;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:9px;box-shadow:0 1px 6px rgba(124,92,191,0.08);">
+          <div style="width:28px;height:28px;background:#ede8f8;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;">🛒</div>
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:#1e1530;margin-bottom:4px;">Groceries</div>
+            <div style="height:3px;background:#ede8f8;border-radius:2px;"><div style="width:55%;height:100%;background:#7c5cbf;border-radius:2px;"></div></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#1e1530;">£61.30</div>
+        </div>
+      </div>
+
+      <div style="margin:14px 18px 0;background:#7c5cbf;border-radius:12px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:7px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.65);margin-bottom:2px;">ASK CAIT</div>
+          <div style="font-size:12px;font-weight:700;color:#fff;">Can I afford this?</div>
+        </div>
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;">↗</div>
+      </div>
+
+      <div style="margin-top:14px;padding:10px 18px 14px;border-top:1px solid rgba(124,92,191,0.1);display:flex;justify-content:space-around;background:#fff;">
+        <div style="text-align:center;">
+          <div style="font-size:16px;">🏠</div>
+          <div style="font-size:7px;font-weight:700;color:#7c5cbf;margin-top:2px;">Home</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;opacity:0.35;">📋</div>
+          <div style="font-size:7px;font-weight:600;color:#ccc;margin-top:2px;">Transactions</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;opacity:0.35;">💬</div>
+          <div style="font-size:7px;font-weight:600;color:#ccc;margin-top:2px;">Ask CAIT</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;opacity:0.35;">⚙️</div>
+          <div style="font-size:7px;font-weight:600;color:#ccc;margin-top:2px;">Settings</div>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;padding:10px 0 4px;font-weight:700;font-size:13px;color:#1e1530;">D — Dusk</div>
+  </div>
+
+</div>

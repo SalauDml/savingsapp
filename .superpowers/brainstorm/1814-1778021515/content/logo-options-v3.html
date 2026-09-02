@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAIT Logo v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&family=Syne:wght@800&family=Unbounded:wght@700&family=DM+Serif+Display&family=DM+Sans:wght@900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f7f4f0; font-family: 'Plus Jakarta Sans', sans-serif; padding: 40px 28px; }
+
+  h2 { font-size: 18px; font-weight: 800; color: #2d2420; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #9b7e6a; margin-bottom: 36px; }
+
+  .section-label {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1px; color: #b8a89a; margin-bottom: 16px; margin-top: 36px;
+  }
+
+  .badge-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 8px; }
+
+  .badge-tile {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; cursor: pointer; padding: 16px 12px;
+    border-radius: 14px; border: 2px solid transparent;
+    transition: border-color 0.15s, background 0.15s; min-width: 110px;
+  }
+  .badge-tile:hover { background: rgba(155,126,106,0.07); }
+  .badge-tile.selected { border-color: #9b7e6a; background: rgba(155,126,106,0.1); }
+
+  .badge {
+    display: flex; align-items: center; justify-content: center;
+    width: 110px; height: 52px; border-radius: 13px; color: white;
+  }
+
+  .bg-warm  { background: #9b7e6a; }
+  .bg-deep  { background: #7a6355; }
+  .bg-dark  { background: #2d2420; }
+  .bg-coral { background: #e8785c; }
+
+  .f-jakarta  { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 24px; letter-spacing: 1px; }
+  .f-dm-sans  { font-family: 'DM Sans', sans-serif; font-weight: 900; font-size: 26px; letter-spacing: 0.5px; }
+  .f-unbounded{ font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: 0.5px; }
+  .f-serif    { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 26px; }
+
+  .tile-label { font-size: 10px; font-weight: 700; color: #7a6355; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tile-sub   { font-size: 9px; color: #b8a89a; text-align: center; margin-top: 2px; }
+
+  .new-badge {
+    display: inline-block; font-size: 9px; font-weight: 800;
+    background: #e8ddd5; color: #7a6355; padding: 2px 7px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+    margin-left: 6px; vertical-align: middle;
+  }
+
+  /* ─── PHONE ─── */
+  .divider { height: 1px; background: #e8ddd5; margin: 48px 0 36px; }
+  .phone-wrap { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+
+  .phone {
+    width: 230px; background: #1a1a1a; border-radius: 38px;
+    padding: 18px 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.25); flex-shrink: 0;
+  }
+  .phone-top-bar { width: 56px; height: 4px; background: #333; border-radius: 2px; margin: 0 auto 14px; }
+  .phone-status { display: flex; justify-content: space-between; align-items: center; padding: 0 6px; margin-bottom: 18px; }
+  .phone-time { font-size: 11px; font-weight: 700; color: #fff; }
+  .phone-icons { font-size: 10px; color: #fff; }
+
+  .icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 2px; }
+  .app-icon { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .app-icon-img {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 800;
+  }
+  .app-icon-label { font-size: 8px; color: rgba(255,255,255,0.7); text-align: center; }
+
+  .dummy-a { background: #4285F4; }
+  .dummy-b { background: #34A853; }
+  .dummy-d { background: #EA4335; }
+  .dummy-e { background: #1DB954; font-size: 13px; }
+  .dummy-f { background: #FF6900; }
+  .dummy-g { background: #0F62FE; }
+  .dummy-c { background: #FBBC05; color: #333 !important; }
+
+  .phone-col { display: flex; flex-direction: column; align-items: center; }
+  .phone-label { font-size: 11px; font-weight: 700; color: #7a6355; text-align: center; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 12px; }
+  .phone-sub { font-size: 10px; color: #b8a89a; text-align: center; margin-top: 2px; }
+</style>
+<script>
+  function toggleSelect(el) {
+    const wasSelected = el.classList.contains('selected');
+    document.querySelectorAll('.badge-tile').forEach(t => t.classList.remove('selected'));
+    if (!wasSelected) {
+      el.classList.add('selected');
+      if (window.recordChoice) window.recordChoice(el.dataset.choice, el.querySelector('.tile-label').textContent);
+    }
+  }
+</script>
+</head>
+<body>
+
+<h2>CAIT Logo — Badge Options</h2>
+<p class="subtitle">A / D / E / F across four backgrounds. Click to select.</p>
+
+<!-- A: Plus Jakarta Sans -->
+<div class="section-label">A — Plus Jakarta Sans ExtraBold</div>
+<div class="badge-row">
+  <div class="badge-tile" data-choice="a-warm" onclick="toggleSelect(this)">
+    <div class="badge bg-warm f-jakarta">CAIT</div>
+    <div><div class="tile-label">A1 — Warm</div><div class="tile-sub">#9b7e6a</div></div>
+  </div>
+  <div class="badge-tile" data-choice="a-deep" onclick="toggleSelect(this)">
+    <div class="badge bg-deep f-jakarta">CAIT</div>
+    <div><div class="tile-label">A2 — Deep</div><div class="tile-sub">#7a6355</div></div>
+  </div>
+  <div class="badge-tile" data-choice="a-dark" onclick="toggleSelect(this)">
+    <div class="badge bg-dark f-jakarta">CAIT</div>
+    <div><div class="tile-label">A3 — Dark</div><div class="tile-sub">#2d2420</div></div>
+  </div>
+  <div class="badge-tile" data-choice="a-coral" onclick="toggleSelect(this)">
+    <div class="badge bg-coral f-jakarta">CAIT</div>
+    <div><div class="tile-label">A4 — Coral</div><div class="tile-sub">#e8785c</div></div>
+  </div>
+</div>
+
+<!-- D: DM Sans Black -->
+<div class="section-label">D — DM Sans Black <span class="new-badge">back</span></div>
+<div class="badge-row">
+  <div class="badge-tile" data-choice="d-warm" onclick="toggleSelect(this)">
+    <div class="badge bg-warm f-dm-sans">CAIT</div>
+    <div><div class="tile-label">D1 — Warm</div><div class="tile-sub">#9b7e6a</div></div>
+  </div>
+  <div class="badge-tile" data-choice="d-deep" onclick="toggleSelect(this)">
+    <div class="badge bg-deep f-dm-sans">CAIT</div>
+    <div><div class="tile-label">D2 — Deep</div><div class="tile-sub">#7a6355</div></div>
+  </div>
+  <div class="badge-tile" data-choice="d-dark" onclick="toggleSelect(this)">
+    <div class="badge bg-dark f-dm-sans">CAIT</div>
+    <div><div class="tile-label">D3 — Dark</div><div class="tile-sub">#2d2420</div></div>
+  </div>
+  <div class="badge-tile" data-choice="d-coral" onclick="toggleSelect(this)">
+    <div class="badge bg-coral f-dm-sans">CAIT</div>
+    <div><div class="tile-label">D4 — Coral</div><div class="tile-sub">#e8785c</div></div>
+  </div>
+</div>
+
+<!-- E: Unbounded -->
+<div class="section-label">E — Unbounded Bold</div>
+<div class="badge-row">
+  <div class="badge-tile" data-choice="e-warm" onclick="toggleSelect(this)">
+    <div class="badge bg-warm f-unbounded">CAIT</div>
+    <div><div class="tile-label">E1 — Warm</div><div class="tile-sub">#9b7e6a</div></div>
+  </div>
+  <div class="badge-tile" data-choice="e-deep" onclick="toggleSelect(this)">
+    <div class="badge bg-deep f-unbounded">CAIT</div>
+    <div><div class="tile-label">E2 — Deep</div><div class="tile-sub">#7a6355</div></div>
+  </div>
+  <div class="badge-tile" data-choice="e-dark" onclick="toggleSelect(this)">
+    <div class="badge bg-dark f-unbounded">CAIT</div>
+    <div><div class="tile-label">E3 — Dark</div><div class="tile-sub">#2d2420</div></div>
+  </div>
+  <div class="badge-tile" data-choice="e-coral" onclick="toggleSelect(this)">
+    <div class="badge bg-coral f-unbounded">CAIT</div>
+    <div><div class="tile-label">E4 — Coral</div><div class="tile-sub">#e8785c</div></div>
+  </div>
+</div>
+
+<!-- F: DM Serif -->
+<div class="section-label">F — DM Serif Display</div>
+<div class="badge-row">
+  <div class="badge-tile" data-choice="f-warm" onclick="toggleSelect(this)">
+    <div class="badge bg-warm f-serif">CAIT</div>
+    <div><div class="tile-label">F1 — Warm</div><div class="tile-sub">#9b7e6a</div></div>
+  </div>
+  <div class="badge-tile" data-choice="f-deep" onclick="toggleSelect(this)">
+    <div class="badge bg-deep f-serif">CAIT</div>
+    <div><div class="tile-label">F2 — Deep</div><div class="tile-sub">#7a6355</div></div>
+  </div>
+  <div class="badge-tile" data-choice="f-dark" onclick="toggleSelect(this)">
+    <div class="badge bg-dark f-serif">CAIT</div>
+    <div><div class="tile-label">F3 — Dark</div><div class="tile-sub">#2d2420</div></div>
+  </div>
+  <div class="badge-tile" data-choice="f-coral" onclick="toggleSelect(this)">
+    <div class="badge bg-coral f-serif">CAIT</div>
+    <div><div class="tile-label">F4 — Coral</div><div class="tile-sub">#e8785c</div></div>
+  </div>
+</div>
+
+<!-- ─── PHONE HOME SCREENS ─── -->
+<div class="divider"></div>
+<div class="section-label">App icon — phone home screen</div>
+<p class="subtitle" style="margin-bottom: 28px; margin-top: -8px;">48×48px at iOS icon radius</p>
+
+<div class="phone-wrap">
+
+  <!-- D1: DM Sans + Warm -->
+  <div class="phone-col">
+    <div class="phone">
+      <div class="phone-top-bar"></div>
+      <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-icons">●●●</span></div>
+      <div class="icon-grid">
+        <div class="app-icon"><div class="app-icon-img dummy-a" style="font-size:11px;">G</div><div class="app-icon-label">Maps</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-b" style="font-size:11px;">M</div><div class="app-icon-label">Mail</div></div>
+        <div class="app-icon">
+          <div class="app-icon-img bg-warm f-dm-sans" style="font-size:13px;letter-spacing:0.3px;">CAIT</div>
+          <div class="app-icon-label" style="color:#9b7e6a;font-weight:800;">CAIT</div>
+        </div>
+        <div class="app-icon"><div class="app-icon-img dummy-d" style="font-size:11px;">S</div><div class="app-icon-label">Store</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-e">♪</div><div class="app-icon-label">Music</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-f" style="font-size:11px;">P</div><div class="app-icon-label">Photos</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-g" style="font-size:11px;">N</div><div class="app-icon-label">Notes</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-c" style="font-size:11px;">C</div><div class="app-icon-label">Clock</div></div>
+      </div>
+    </div>
+    <div class="phone-label" style="margin-top:14px;">D1 — DM Sans + Warm</div>
+    <div class="phone-sub">#9b7e6a</div>
+  </div>
+
+  <!-- D2: DM Sans + Deep -->
+  <div class="phone-col">
+    <div class="phone">
+      <div class="phone-top-bar"></div>
+      <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-icons">●●●</span></div>
+      <div class="icon-grid">
+        <div class="app-icon"><div class="app-icon-img dummy-a" style="font-size:11px;">G</div><div class="app-icon-label">Maps</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-b" style="font-size:11px;">M</div><div class="app-icon-label">Mail</div></div>
+        <div class="app-icon">
+          <div class="app-icon-img bg-deep f-dm-sans" style="font-size:13px;letter-spacing:0.3px;">CAIT</div>
+          <div class="app-icon-label" style="color:#9b7e6a;font-weight:800;">CAIT</div>
+        </div>
+        <div class="app-icon"><div class="app-icon-img dummy-d" style="font-size:11px;">S</div><div class="app-icon-label">Store</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-e">♪</div><div class="app-icon-label">Music</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-f" style="font-size:11px;">P</div><div class="app-icon-label">Photos</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-g" style="font-size:11px;">N</div><div class="app-icon-label">Notes</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-c" style="font-size:11px;">C</div><div class="app-icon-label">Clock</div></div>
+      </div>
+    </div>
+    <div class="phone-label" style="margin-top:14px;">D2 — DM Sans + Deep</div>
+    <div class="phone-sub">#7a6355</div>
+  </div>
+
+  <!-- A + Deep -->
+  <div class="phone-col">
+    <div class="phone">
+      <div class="phone-top-bar"></div>
+      <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-icons">●●●</span></div>
+      <div class="icon-grid">
+        <div class="app-icon"><div class="app-icon-img dummy-a" style="font-size:11px;">G</div><div class="app-icon-label">Maps</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-b" style="font-size:11px;">M</div><div class="app-icon-label">Mail</div></div>
+        <div class="app-icon">
+          <div class="app-icon-img bg-deep f-jakarta" style="font-size:12px;letter-spacing:0.5px;">CAIT</div>
+          <div class="app-icon-label" style="color:#9b7e6a;font-weight:800;">CAIT</div>
+        </div>
+        <div class="app-icon"><div class="app-icon-img dummy-d" style="font-size:11px;">S</div><div class="app-icon-label">Store</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-e">♪</div><div class="app-icon-label">Music</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-f" style="font-size:11px;">P</div><div class="app-icon-label">Photos</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-g" style="font-size:11px;">N</div><div class="app-icon-label">Notes</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-c" style="font-size:11px;">C</div><div class="app-icon-label">Clock</div></div>
+      </div>
+    </div>
+    <div class="phone-label" style="margin-top:14px;">A2 — Jakarta + Deep</div>
+    <div class="phone-sub">#7a6355</div>
+  </div>
+
+  <!-- F + Deep -->
+  <div class="phone-col">
+    <div class="phone">
+      <div class="phone-top-bar"></div>
+      <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-icons">●●●</span></div>
+      <div class="icon-grid">
+        <div class="app-icon"><div class="app-icon-img dummy-a" style="font-size:11px;">G</div><div class="app-icon-label">Maps</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-b" style="font-size:11px;">M</div><div class="app-icon-label">Mail</div></div>
+        <div class="app-icon">
+          <div class="app-icon-img bg-deep f-serif" style="font-size:14px;">CAIT</div>
+          <div class="app-icon-label" style="color:#9b7e6a;font-weight:800;">CAIT</div>
+        </div>
+        <div class="app-icon"><div class="app-icon-img dummy-d" style="font-size:11px;">S</div><div class="app-icon-label">Store</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-e">♪</div><div class="app-icon-label">Music</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-f" style="font-size:11px;">P</div><div class="app-icon-label">Photos</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-g" style="font-size:11px;">N</div><div class="app-icon-label">Notes</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-c" style="font-size:11px;">C</div><div class="app-icon-label">Clock</div></div>
+      </div>
+    </div>
+    <div class="phone-label" style="margin-top:14px;">F2 — Serif + Deep</div>
+    <div class="phone-sub">#7a6355</div>
+  </div>
+
+  <!-- E + Dark -->
+  <div class="phone-col">
+    <div class="phone">
+      <div class="phone-top-bar"></div>
+      <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-icons">●●●</span></div>
+      <div class="icon-grid">
+        <div class="app-icon"><div class="app-icon-img dummy-a" style="font-size:11px;">G</div><div class="app-icon-label">Maps</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-b" style="font-size:11px;">M</div><div class="app-icon-label">Mail</div></div>
+        <div class="app-icon">
+          <div class="app-icon-img bg-dark f-unbounded" style="font-size:9px;letter-spacing:0.3px;">CAIT</div>
+          <div class="app-icon-label" style="color:#9b7e6a;font-weight:800;">CAIT</div>
+        </div>
+        <div class="app-icon"><div class="app-icon-img dummy-d" style="font-size:11px;">S</div><div class="app-icon-label">Store</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-e">♪</div><div class="app-icon-label">Music</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-f" style="font-size:11px;">P</div><div class="app-icon-label">Photos</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-g" style="font-size:11px;">N</div><div class="app-icon-label">Notes</div></div>
+        <div class="app-icon"><div class="app-icon-img dummy-c" style="font-size:11px;">C</div><div class="app-icon-label">Clock</div></div>
+      </div>
+    </div>
+    <div class="phone-label" style="margin-top:14px;">E3 — Unbounded + Dark</div>
+    <div class="phone-sub">#2d2420</div>
+  </div>
+
+</div>
+
+</body>
+</html>

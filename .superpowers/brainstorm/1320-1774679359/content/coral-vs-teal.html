@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAIT — Coral vs Teal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0e0e0e;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  padding: 36px 24px 48px;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.page-header h1 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 8px;
+}
+.page-header p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.2);
+  max-width: 460px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  max-width: 740px;
+  margin: 0 auto;
+}
+
+.column-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.column-header .colour-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+}
+.column-header h2 {
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.column-header p {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  line-height: 1.5;
+}
+
+/* Phone */
+.phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.phone-shell {
+  width: 220px;
+  border-radius: 34px;
+  padding: 9px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.07), 0 24px 60px rgba(0,0,0,0.5);
+}
+.phone-screen { border-radius: 26px; overflow: hidden; }
+
+.status-bar {
+  padding: 10px 16px 5px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* ── SHARED LAYOUT ── */
+.home-inner { padding: 4px 16px 14px; }
+
+.greeting { font-size: 9px; font-weight: 700; margin-bottom: 4px; }
+.balance { font-family: 'DM Serif Display', serif; font-size: 36px; letter-spacing: -1px; line-height: 1; }
+.balance-label { font-size: 9px; font-weight: 600; margin-top: 2px; margin-bottom: 14px; }
+
+.cait-card {
+  border-radius: 11px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.cait-card-label { font-size: 8px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 4px; }
+.cait-card-text { font-size: 10px; line-height: 1.5; font-weight: 500; }
+
+.section-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.section-title { font-size: 9px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; }
+.see-all { font-size: 9px; font-weight: 600; }
+
+.cats { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.cat {
+  border-radius: 9px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.04);
+}
+.cat-icon {
+  width: 26px; height: 26px;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+}
+.cat-name { font-size: 10px; font-weight: 700; margin-bottom: 3px; }
+.bar { height: 3px; border-radius: 2px; }
+.cat-amount { font-size: 10px; font-weight: 700; flex-shrink: 0; margin-left: auto; }
+
+.ask-btn {
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.ask-label { font-size: 8px; font-weight: 700; opacity: 0.75; margin-bottom: 1px; }
+.ask-prompt { font-size: 11px; font-weight: 700; color: #fff; }
+.ask-arrow {
+  width: 22px; height: 22px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 11px; flex-shrink: 0; margin-left: auto;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 8px 8px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.nav-icon { font-size: 14px; }
+.nav-lbl { font-size: 7px; font-weight: 600; color: #ccc; }
+.nav-dot { width: 4px; height: 4px; border-radius: 50%; margin: 0 auto; }
+
+/* palette strips */
+.palette {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+.p-swatch {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.palette-label { font-size: 10px; color: rgba(255,255,255,0.25); text-align: center; margin-top: 6px; }
+
+/* personality labels */
+.personality {
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 14px;
+}
+.personality h4 { font-size: 10px; font-weight: 700; margin-bottom: 6px; }
+.personality ul { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+.personality ul li { font-size: 10px; color: rgba(255,255,255,0.4); line-height: 1.4; }
+.personality ul li::before { content: '— '; opacity: 0.4; }
+
+/* divider */
+.vs-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  top: 280px;
+  transform: translateX(-50%);
+  width: 36px; height: 36px;
+  background: #222;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.3);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  z-index: 10;
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>CAIT — Coral vs Teal</h1>
+  <p>Identical layout. Identical copy. Two different personalities. Which one is CAIT?</p>
+</div>
+
+<div style="position:relative; max-width:740px; margin:0 auto;">
+<div class="vs-divider">VS</div>
+
+<div class="columns">
+
+  <!-- ══ CORAL ══ -->
+  <div>
+    <div class="column-header">
+      <div class="colour-dot" style="background:#e8785c;"></div>
+      <h2 style="color:#e8785c;">Coral</h2>
+      <p>Warm, social, energetic.<br>The friend who's always up for it.</p>
+    </div>
+
+    <div class="phone-wrap">
+
+      <!-- Home -->
+      <div style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.2); letter-spacing:0.5px; text-transform:uppercase;">Home</div>
+      <div class="phone-shell" style="background:#1a0a06;">
+        <div class="phone-screen" style="background:#fff9f7;">
+          <div class="status-bar" style="background:#fff9f7; color:#1a0a06;"><span>9:41</span><span>●●▐</span></div>
+          <div class="home-inner">
+            <div class="greeting" style="color:#c96a50;">Hey Sam 👋</div>
+            <div class="balance" style="color:#1a0a06;">£342.80</div>
+            <div class="balance-label" style="color:#c96a50;">spent this month</div>
+
+            <div class="cait-card" style="background:#1a0a06;">
+              <div class="cait-card-label" style="color:#e8785c;">✦ CAIT says</div>
+              <div class="cait-card-text" style="color:#fff;">You've been to Nandos <strong style="color:#e8785c;">4 times</strong> this month. That's a lifestyle, not a habit.</div>
+            </div>
+
+            <div class="section-row">
+              <span class="section-title" style="color:#1a0a06;">Where it went</span>
+              <span class="see-all" style="color:#e8785c;">See all →</span>
+            </div>
+            <div class="cats">
+              <div class="cat" style="background:#fff; box-shadow:0 1px 5px rgba(201,106,80,0.08);">
+                <div class="cat-icon" style="background:#fde8e3;">🍕</div>
+                <div style="flex:1;"><div class="cat-name" style="color:#1a0a06;">Eating out</div><div class="bar" style="background:#fde8e3;"><div class="bar" style="background:#e8785c;width:68%;"></div></div></div>
+                <div class="cat-amount" style="color:#1a0a06;">£128</div>
+              </div>
+              <div class="cat" style="background:#fff; box-shadow:0 1px 5px rgba(201,106,80,0.08);">
+                <div class="cat-icon" style="background:#fde8e3;">🚌</div>
+                <div style="flex:1;"><div class="cat-name" style="color:#1a0a06;">Transport</div><div class="bar" style="background:#fde8e3;"><div class="bar" style="background:#e8785c;width:42%;"></div></div></div>
+                <div class="cat-amount" style="color:#1a0a06;">£74</div>
+              </div>
+            </div>
+
+            <div class="ask-btn" style="background:#e8785c;">
+              <div><div class="ask-label" style="color:rgba(255,255,255,0.75);">ASK CAIT</div><div class="ask-prompt">Can I afford this?</div></div>
+              <div class="ask-arrow">↗</div>
+            </div>
+          </div>
+          <div class="nav" style="background:#fff; border-top-color:rgba(201,106,80,0.1);">
+            <div class="nav-item"><div class="nav-icon">⊞</div><div class="nav-dot" style="background:#e8785c;"></div></div>
+            <div class="nav-item"><div class="nav-icon">↕</div><div class="nav-lbl">Txns</div></div>
+            <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-lbl">Ask Cait</div></div>
+            <div class="nav-item"><div class="nav-icon">⚙</div><div class="nav-lbl">Settings</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ask Cait -->
+      <div style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.2); letter-spacing:0.5px; text-transform:uppercase; margin-top:8px;">Ask Cait</div>
+      <div class="phone-shell" style="background:#1a0a06;">
+        <div class="phone-screen" style="background:#fff9f7;">
+          <div class="status-bar" style="background:#fff9f7; color:#1a0a06;"><span>9:41</span><span>●●▐</span></div>
+          <div style="padding:4px 16px 12px; font-family:'Plus Jakarta Sans',sans-serif;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+              <div style="font-size:13px; font-weight:800; color:#1a0a06;">Ask Cait</div>
+              <div style="background:#e8785c; color:#fff; font-size:8px; font-weight:800; padding:2px 7px; border-radius:20px;">CAIT</div>
+            </div>
+            <div style="font-size:9px; color:#c96a50; font-weight:600; margin-bottom:12px;">Your brutally honest money friend</div>
+
+            <div style="display:flex; flex-direction:column; gap:7px; margin-bottom:10px;">
+              <div style="display:flex; gap:6px; align-items:flex-start;">
+                <div style="width:20px;height:20px;background:#e8785c;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;">C</div>
+                <div style="background:#fff;border-radius:9px 9px 9px 2px;padding:7px 9px;font-size:9px;color:#1a0a06;line-height:1.5;box-shadow:0 1px 4px rgba(201,106,80,0.1);">No secrets here. What do you need? 👀</div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;">
+                <div style="background:#1a0a06;border-radius:9px 9px 2px 9px;padding:7px 9px;font-size:9px;color:#fff;max-width:75%;">Can I afford Nandos tonight?</div>
+              </div>
+              <div style="display:flex; gap:6px; align-items:flex-start;">
+                <div style="width:20px;height:20px;background:#e8785c;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;">C</div>
+                <div style="background:#fff;border-radius:9px 9px 9px 2px;padding:7px 9px;font-size:9px;color:#1a0a06;line-height:1.5;box-shadow:0 1px 4px rgba(201,106,80,0.1);"><strong style="color:#e8785c;">£157</strong> left this month. Yes — but it's your 5th visit. That's between you and God. 🍗</div>
+              </div>
+            </div>
+
+            <div style="background:#f5ede9;border-radius:9px;padding:8px 10px;display:flex;align-items:center;gap:7px;">
+              <span style="font-size:9px;color:#999;flex:1;">Ask me anything...</span>
+              <div style="width:20px;height:20px;background:#e8785c;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;">↑</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette">
+        <div class="p-swatch" style="background:#fff9f7;"></div>
+        <div class="p-swatch" style="background:#e8785c;"></div>
+        <div class="p-swatch" style="background:#c96a50;"></div>
+        <div class="p-swatch" style="background:#1a0a06;"></div>
+      </div>
+      <div class="palette-label">#fff9f7 · #e8785c · #c96a50 · #1a0a06</div>
+
+      <div class="personality">
+        <h4 style="color:#e8785c;">Coral CAIT feels like…</h4>
+        <ul>
+          <li>Warm, spontaneous, social</li>
+          <li>The friend who texts first</li>
+          <li>High energy, big heart</li>
+          <li>Feels like a hug</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ TEAL ══ -->
+  <div>
+    <div class="column-header">
+      <div class="colour-dot" style="background:#4A8A8C;"></div>
+      <h2 style="color:#4A8A8C;">Teal #4A8A8C</h2>
+      <p>Cool, confident, composed.<br>The friend who always knows the answer.</p>
+    </div>
+
+    <div class="phone-wrap">
+
+      <!-- Home -->
+      <div style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.2); letter-spacing:0.5px; text-transform:uppercase;">Home</div>
+      <div class="phone-shell" style="background:#0d2526;">
+        <div class="phone-screen" style="background:#f4fafa;">
+          <div class="status-bar" style="background:#f4fafa; color:#0d2526;"><span>9:41</span><span>●●▐</span></div>
+          <div class="home-inner">
+            <div class="greeting" style="color:#3a7072;">Hey Sam 👋</div>
+            <div class="balance" style="color:#0d2526;">£342.80</div>
+            <div class="balance-label" style="color:#3a7072;">spent this month</div>
+
+            <div class="cait-card" style="background:#0d2526;">
+              <div class="cait-card-label" style="color:#4A8A8C;">✦ CAIT says</div>
+              <div class="cait-card-text" style="color:#fff;">You've been to Nandos <strong style="color:#4A8A8C;">4 times</strong> this month. That's a lifestyle, not a habit.</div>
+            </div>
+
+            <div class="section-row">
+              <span class="section-title" style="color:#0d2526;">Where it went</span>
+              <span class="see-all" style="color:#4A8A8C;">See all →</span>
+            </div>
+            <div class="cats">
+              <div class="cat" style="background:#fff; box-shadow:0 1px 5px rgba(74,138,140,0.08);">
+                <div class="cat-icon" style="background:#d4eaea;">🍕</div>
+                <div style="flex:1;"><div class="cat-name" style="color:#0d2526;">Eating out</div><div class="bar" style="background:#d4eaea;"><div class="bar" style="background:#4A8A8C;width:68%;"></div></div></div>
+                <div class="cat-amount" style="color:#0d2526;">£128</div>
+              </div>
+              <div class="cat" style="background:#fff; box-shadow:0 1px 5px rgba(74,138,140,0.08);">
+                <div class="cat-icon" style="background:#d4eaea;">🚌</div>
+                <div style="flex:1;"><div class="cat-name" style="color:#0d2526;">Transport</div><div class="bar" style="background:#d4eaea;"><div class="bar" style="background:#4A8A8C;width:42%;"></div></div></div>
+                <div class="cat-amount" style="color:#0d2526;">£74</div>
+              </div>
+            </div>
+
+            <div class="ask-btn" style="background:#4A8A8C;">
+              <div><div class="ask-label" style="color:rgba(255,255,255,0.75);">ASK CAIT</div><div class="ask-prompt">Can I afford this?</div></div>
+              <div class="ask-arrow">↗</div>
+            </div>
+          </div>
+          <div class="nav" style="background:#fff; border-top-color:rgba(74,138,140,0.1);">
+            <div class="nav-item"><div class="nav-icon">⊞</div><div class="nav-dot" style="background:#4A8A8C;"></div></div>
+            <div class="nav-item"><div class="nav-icon">↕</div><div class="nav-lbl">Txns</div></div>
+            <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-lbl">Ask Cait</div></div>
+            <div class="nav-item"><div class="nav-icon">⚙</div><div class="nav-lbl">Settings</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ask Cait -->
+      <div style="font-size:9px; font-weight:700; color:rgba(255,255,255,0.2); letter-spacing:0.5px; text-transform:uppercase; margin-top:8px;">Ask Cait</div>
+      <div class="phone-shell" style="background:#0d2526;">
+        <div class="phone-screen" style="background:#f4fafa;">
+          <div class="status-bar" style="background:#f4fafa; color:#0d2526;"><span>9:41</span><span>●●▐</span></div>
+          <div style="padding:4px 16px 12px; font-family:'Plus Jakarta Sans',sans-serif;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+              <div style="font-size:13px; font-weight:800; color:#0d2526;">Ask Cait</div>
+              <div style="background:#4A8A8C; color:#fff; font-size:8px; font-weight:800; padding:2px 7px; border-radius:20px;">CAIT</div>
+            </div>
+            <div style="font-size:9px; color:#3a7072; font-weight:600; margin-bottom:12px;">Your brutally honest money friend</div>
+
+            <div style="display:flex; flex-direction:column; gap:7px; margin-bottom:10px;">
+              <div style="display:flex; gap:6px; align-items:flex-start;">
+                <div style="width:20px;height:20px;background:#4A8A8C;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;">C</div>
+                <div style="background:#fff;border-radius:9px 9px 9px 2px;padding:7px 9px;font-size:9px;color:#0d2526;line-height:1.5;box-shadow:0 1px 4px rgba(74,138,140,0.1);">No secrets here. What do you need? 👀</div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;">
+                <div style="background:#0d2526;border-radius:9px 9px 2px 9px;padding:7px 9px;font-size:9px;color:#fff;max-width:75%;">Can I afford Nandos tonight?</div>
+              </div>
+              <div style="display:flex; gap:6px; align-items:flex-start;">
+                <div style="width:20px;height:20px;background:#4A8A8C;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;">C</div>
+                <div style="background:#fff;border-radius:9px 9px 9px 2px;padding:7px 9px;font-size:9px;color:#0d2526;line-height:1.5;box-shadow:0 1px 4px rgba(74,138,140,0.1);"><strong style="color:#4A8A8C;">£157</strong> left this month. Yes — but it's your 5th visit. That's between you and God. 🍗</div>
+              </div>
+            </div>
+
+            <div style="background:#e8f4f4;border-radius:9px;padding:8px 10px;display:flex;align-items:center;gap:7px;">
+              <span style="font-size:9px;color:#999;flex:1;">Ask me anything...</span>
+              <div style="width:20px;height:20px;background:#4A8A8C;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;">↑</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette">
+        <div class="p-swatch" style="background:#f4fafa;"></div>
+        <div class="p-swatch" style="background:#4A8A8C;"></div>
+        <div class="p-swatch" style="background:#3a7072;"></div>
+        <div class="p-swatch" style="background:#0d2526;"></div>
+      </div>
+      <div class="palette-label">#f4fafa · #4A8A8C · #3a7072 · #0d2526</div>
+
+      <div class="personality">
+        <h4 style="color:#4A8A8C;">Teal CAIT feels like…</h4>
+        <ul>
+          <li>Cool, composed, clear-headed</li>
+          <li>The friend who's always got a plan</li>
+          <li>Sharp wit, calm delivery</li>
+          <li>Feels like a knowing look</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div style="max-width:740px; margin:32px auto 0; background:rgba(255,255,255,0.04); border-radius:12px; padding:16px 20px; font-size:11px; color:rgba(255,255,255,0.3); line-height:1.7; text-align:center;">
+  Both use: DM Serif Display (balance only) · Plus Jakarta Sans (everything else) · Spacious layout · Same copy, same structure<br>
+  The only variable is colour — and yet they feel like two different apps.
+</div>
+
+</body>
+</html>

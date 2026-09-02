@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAIT — Pink Family</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0c0c0c;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 36px 20px 56px;
+}
+.page-title { text-align: center; margin-bottom: 36px; }
+.page-title h1 { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 6px; }
+.page-title p { font-size: 11px; color: rgba(255,255,255,0.12); max-width: 400px; margin: 0 auto; line-height: 1.6; }
+
+.four-col { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 18px; max-width: 900px; margin: 0 auto; }
+
+.col-head { text-align: center; padding-bottom: 16px; margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.col-dot { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 8px; }
+.col-head h2 { font-size: 13px; font-weight: 800; margin-bottom: 2px; }
+.col-head p { font-size: 9px; color: rgba(255,255,255,0.25); line-height: 1.5; }
+
+.phone-shell { border-radius: 28px; padding: 7px; box-shadow: 0 0 0 1px rgba(255,255,255,0.07), 0 16px 40px rgba(0,0,0,0.5); }
+.phone-screen { border-radius: 22px; overflow: hidden; }
+.status { padding: 9px 13px 4px; display: flex; justify-content: space-between; font-size: 8px; font-weight: 700; }
+.inner { padding: 4px 13px 13px; }
+.greeting { font-size: 8px; font-weight: 700; margin-bottom: 3px; }
+.balance { font-family: 'DM Serif Display', serif; font-size: 28px; letter-spacing: -0.8px; line-height: 1; }
+.bal-sub { font-size: 8px; font-weight: 600; margin-top: 2px; margin-bottom: 11px; }
+.cait-card { border-radius: 9px; padding: 9px 10px; margin-bottom: 10px; }
+.cait-lbl { font-size: 7px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 3px; }
+.cait-txt { font-size: 8px; line-height: 1.5; font-weight: 500; }
+.sec-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.sec-lbl { font-size: 7px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; }
+.see-all { font-size: 7px; font-weight: 700; }
+.cats { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.cat { border-radius: 7px; padding: 7px 8px; display: flex; align-items: center; gap: 6px; }
+.cat-ico { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+.cat-name { font-size: 8px; font-weight: 700; margin-bottom: 2px; }
+.bar { height: 2px; border-radius: 2px; }
+.cat-amt { font-size: 8px; font-weight: 800; flex-shrink: 0; margin-left: auto; }
+.ask-btn { border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 6px; }
+.ask-lbl { font-size: 6px; font-weight: 800; opacity: 0.7; margin-bottom: 1px; letter-spacing: 0.4px; }
+.ask-txt { font-size: 9px; font-weight: 800; color: #fff; }
+.ask-arr { width: 18px; height: 18px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 9px; flex-shrink: 0; margin-left: auto; }
+.nav { display: flex; justify-content: space-around; padding: 8px 5px 6px; border-top-width: 1px; border-top-style: solid; }
+.ni { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.ni-icon { font-size: 12px; }
+.ni-lbl { font-size: 6px; font-weight: 600; color: #ccc; }
+.ni-dot { width: 3px; height: 3px; border-radius: 50%; margin: 0 auto; }
+
+.swatches { display: flex; gap: 4px; justify-content: center; margin-top: 12px; }
+.sw { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); }
+.sw-label { font-size: 8px; color: rgba(255,255,255,0.18); text-align: center; margin-top: 4px; }
+
+.vibe { background: rgba(255,255,255,0.04); border-radius: 9px; padding: 10px 12px; margin-top: 12px; }
+.vibe h4 { font-size: 9px; font-weight: 800; margin-bottom: 5px; }
+.vibe li { font-size: 9px; color: rgba(255,255,255,0.3); line-height: 1.6; list-style: none; }
+.vibe li::before { content: '— '; opacity: 0.5; }
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <h1>CAIT — The Pink Family</h1>
+  <p>All warm. All feminine. None of them taste like a tomato.</p>
+</div>
+
+<div class="four-col">
+
+  <!-- A: SOFT PEACH -->
+  <div>
+    <div class="col-head">
+      <div class="col-dot" style="background:#f4a27a;"></div>
+      <h2 style="color:#f4a27a;">Soft Peach</h2>
+      <p>Coral's gentler sister.<br>Less pepper, more fruit.</p>
+    </div>
+    <div class="phone-shell" style="background:#2a1008;">
+      <div class="phone-screen" style="background:#fff8f4;">
+        <div class="status" style="background:#fff8f4; color:#2a1008;"><span>9:41</span><span>●●▐</span></div>
+        <div class="inner">
+          <div class="greeting" style="color:#c97850;">Hey Sam 👋</div>
+          <div class="balance" style="color:#2a1008;">£342.80</div>
+          <div class="bal-sub" style="color:#c97850;">spent this month</div>
+          <div class="cait-card" style="background:#2a1008;">
+            <div class="cait-lbl" style="color:#f4a27a;">✦ CAIT says</div>
+            <div class="cait-txt" style="color:#fff;">Nandos <strong style="color:#f4a27a;">4 times.</strong> That's a lifestyle, not a habit.</div>
+          </div>
+          <div class="sec-row"><span class="sec-lbl" style="color:#2a1008;">Where it went</span><span class="see-all" style="color:#f4a27a;">See all →</span></div>
+          <div class="cats">
+            <div class="cat" style="background:#fff; box-shadow:0 1px 4px rgba(244,162,122,0.1);">
+              <div class="cat-ico" style="background:#fde8d8;">🍕</div>
+              <div style="flex:1;"><div class="cat-name" style="color:#2a1008;">Eating out</div><div class="bar" style="background:#fde8d8;"><div class="bar" style="background:#f4a27a;width:68%;"></div></div></div>
+              <div class="cat-amt" style="color:#2a1008;">£128</div>
+            </div>
+            <div class="cat" style="background:#fff; box-shadow:0 1px 4px rgba(244,162,122,0.1);">
+              <div class="cat-ico" style="background:#fde8d8;">🚌</div>
+              <div style="flex:1;"><div class="cat-name" style="color:#2a1008;">Transport</div><div class="bar" style="background:#fde8d8;"><div class="bar" style="background:#f4a27a;width:42%;"></div></div></div>
+              <div class="cat-amt" style="color:#2a1008;">£74</div>
+            </div>
+          </div>
+          <div class="ask-btn" style="background:#f4a27a;">
+            <div><div class="ask-lbl">ASK CAIT</div><div class="ask-txt">Can I afford this?</div></div>
+            <div class="ask-arr">↗</div>
+          </div>
+        </div>
+        <div class="nav" style="background:#fff; border-top-color:rgba(244,162,122,0.1);">
+          <div class="ni"><div class="ni-icon">⊞</div><div class="ni-dot" style="background:#f4a27a;"></div></div>
+          <div class="ni"><div class="ni-icon">↕</div><div class="ni-lbl">Txns</div></div>
+          <div class="ni"><div class="ni-icon">💬</div><div class="ni-lbl">Ask</div></div>
+          <div class="ni"><div class="ni-icon">⚙</div><div class="ni-lbl">Settings</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="sw" style="background:#fff8f4;"></div>
+      <div class="sw" style="background:#f4a27a;"></div>
+      <div class="sw" style="background:#2a1008;"></div>
+    </div>
+    <div class="sw-label">#fff8f4 · #f4a27a</div>
+    <div class="vibe">
+      <h4 style="color:#f4a27a;">Soft Peach</h4>
+      <ul>
+        <li>Coral but softer, pinker</li>
+        <li>Sunny, warm, gentle</li>
+        <li>Still feels orange-adjacent</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- B: DUSTY ROSE -->
+  <div>
+    <div class="col-head">
+      <div class="col-dot" style="background:#d4728a;"></div>
+      <h2 style="color:#d4728a;">Dusty Rose</h2>
+      <p>Warm pink with depth.<br>Feminine without being loud.</p>
+    </div>
+    <div class="phone-shell" style="background:#1f0810;">
+      <div class="phone-screen" style="background:#fff5f7;">
+        <div class="status" style="background:#fff5f7; color:#1f0810;"><span>9:41</span><span>●●▐</span></div>
+        <div class="inner">
+          <div class="greeting" style="color:#b05870;">Hey Sam 👋</div>
+          <div class="balance" style="color:#1f0810;">£342.80</div>
+          <div class="bal-sub" style="color:#b05870;">spent this month</div>
+          <div class="cait-card" style="background:#1f0810;">
+            <div class="cait-lbl" style="color:#d4728a;">✦ CAIT says</div>
+            <div class="cait-txt" style="color:#fff;">Nandos <strong style="color:#d4728a;">4 times.</strong> That's a lifestyle, not a habit.</div>
+          </div>
+          <div class="sec-row"><span class="sec-lbl" style="color:#1f0810;">Where it went</span><span class="see-all" style="color:#d4728a;">See all →</span></div>
+          <div class="cats">
+            <div class="cat" style="background:#fff; box-shadow:0 1px 4px rgba(212,114,138,0.1);">
+              <div class="cat-ico" style="background:#fce0e7;">🍕</div>
+              <div style="flex:1;"><div class="cat-name" style="color:#1f0810;">Eating out</div><div class="bar" style="background:#fce0e7;"><div class="bar" style="background:#d4728a;width:68%;"></div></div></div>
+              <div class="cat-amt" style="color:#1f0810;">£128</div>
+            </div>
+            <div class="cat" style="background:#fff; box-shadow:0 1px 4px rgba(212,114,138,0.1);">
+              <div class="cat-ico" style="background:#fce0e7;">🚌</div>
+              <div style="flex:1;"><div class="cat-name" style="color:#1f0810;">Transport</div><div class="bar" style="background:#fce0e7;"><div class="bar" style="background:#d4728a;width:42%;"></div></div></div>
+              <div class="cat-amt" style="color:#1f0810;">£74</div>
+            </div>
+          </div>
+          <div class="ask-btn" style="background:#d4728a;">
+            <div><div class="ask-lbl">ASK CAIT</div><div class="ask-txt">Can I afford this?</div></div>
+            <div class="ask-arr">↗</div>
+          </div>
+        </div>
+        <div class="nav" style="background:#fff; border-top-color:rgba(212,114,138,0.1);">
+          <div class="ni"><div class="ni-icon">⊞</div><div class="ni-dot" style="background:#d4728a;"></div></div>
+          <div class="ni"><div class="ni-icon">↕</div><div class="ni-lbl">Txns</div></div>
+          <div class="ni"><div class="ni-icon">💬</div><div class="ni-lbl">Ask</div></div>
+          <div class="ni"><div class="ni-icon">⚙</div><div class="ni-lbl">Settings</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="sw" style="background:#fff5f7;"></div>
+      <div class="sw" style="background:#d4728a;"></div>
+      <div class="sw" style="background:#1f0810;"></div>
+    </div>
+    <div class="sw-label">#fff5f7 · #d4728a</div>
+    <div class="vibe">
+      <h4 style="color:#d4728a;">Dusty Rose</h4>
+      <ul>
+        <li>Warm pink, clearly feminine</li>
+        <li>Feels considered, not girly</li>
+        <li>Rare in fintech — stands out</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- C: HOT BERRY -->
+  <div>
+    <div class="col-head">
+      <div class="col-dot" style="background:#c23b77;"></div>
+      <h2 style="color:#c23b77;">Berry</h2>
+      <p>Punchy and confident.<br>CAIT with opinions.</p>
+    </div>
+    <div class="phone-shell" style="background:#1a0010;">
+      <div class="phone-screen" style="background:#fff4f8;">
+        <div class="status" style="background:#fff4f8; color:#1a0010;"><span>9:41</span><span>●●▐</span></div>
+        <div class="inner">
+          <div class="greeting" style="color:#982d5e;">Hey Sam 👋</div>
+          <div class="balance" style="color:#1a0010;">£342.80</div>
+          <div class="bal-sub" style="color:#982d5e;">spent this month</div>
+          <div class="cait-card" style="background:#1a0010;">
+            <div class="cait-lbl" style="color:#c23b77;">✦ CAIT says</div>
+            <div class="cait-txt" style="color:#fff;">Nandos <strong style="color:#c23b77;">4 times.</strong> That's a lifestyle, not a habit.</div>
+          </div>
+          <div class="sec-row"><span class="sec-lbl" style="color:#1a0010;">Where it went</span><span class="see-all" style="color:#c23b77;">See all →</span></div>
+          <div class="cats">
+            <div class="cat" style="background:#fff; box-shadow:0 1px 4px rgba(194,59,119,0.1);">
+              <div class="cat-ico" style="background:#fce0ec;">🍕</div>
+              <div style="flex:1;"><div class="cat-name" style="color:#1a0010;">Eating out</div><div class="bar" style="background:#fce0ec;"><div class="bar" style="background:#c23b77;width:68%;"></div></div></div>
+              <div class="cat-amt" style="color:#1a0010;">£128</div>
+            </div>
+            <div class="cat" style="background:#fff; box-shadow:0 1px 4px rgba(194,59,119,0.1);">
+              <div class="cat-ico" style="background:#fce0ec;">🚌</div>
+              <div style="flex:1;"><div class="cat-name" style="color:#1a0010;">Transport</div><div class="bar" style="background:#fce0ec;"><div class="bar" style="background:#c23b77;width:42%;"></div></div></div>
+              <div class="cat-amt" style="color:#1a0010;">£74</div>
+            </div>
+          </div>
+          <div class="ask-btn" style="background:#c23b77;">
+            <div><div class="ask-lbl">ASK CAIT</div><div class="ask-txt">Can I afford this?</div></div>
+            <div class="ask-arr">↗</div>
+          </div>
+        </div>
+        <div class="nav" style="background:#fff; border-top-color:rgba(194,59,119,0.1);">
+          <div class="ni"><div class="ni-icon">⊞</div><div class="ni-dot" style="background:#c23b77;"></div></div>
+          <div class="ni"><div class="ni-icon">↕</div><div class="ni-lbl">Txns</div></div>
+          <div class="ni"><div class="ni-icon">💬</div><div class="ni-lbl">Ask</div></div>
+          <div class="ni"><div class="ni-icon">⚙</div><div class="ni-lbl">Settings</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="sw" style="background:#fff4f8;"></div>
+      <div class="sw" style="background:#c23b77;"></div>
+      <div class="sw" style="background:#1a0010;"></div>
+    </div>
+    <div class="sw-label">#fff4f8 · #c23b77</div>
+    <div class="vibe">
+      <h4 style="color:#c23b77;">Berry</h4>
+      <ul>
+        <li>Bold, confident, no-nonsense</li>
+        <li>CAIT with strong opinions</li>
+        <li>Risk: feels more grown-up</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- D: LILAC -->
+  <div>
+    <div class="col-head">
+      <div class="col-dot" style="background:#a87fc9;"></div>
+      <h2 style="color:#a87fc9;">Lilac</h2>
+      <p>Soft purple. Dreamy.<br>Nobody expects this in fintech.</p>
+    </div>
+    <div class="phone-shell" style="background:#160d22;">
+      <div class="phone-screen" style="background:#faf6ff;">
+        <div class="status" style="background:#faf6ff; color:#160d22;"><span>9:41</span><span>●●▐</span></div>
+        <div class="inner">
+          <div class="greeting" style="color:#8260a8;">Hey Sam 👋</div>
+          <div class="balance" style="color:#160d22;">£342.80</div>
+          <div class="bal-sub" style="color:#8260a8;">spent this month</div>
+          <div class="cait-card" style="background:#160d22;">
+            <div class="cait-lbl" style="color:#a87fc9;">✦ CAIT says</div>
+            <div class="cait-txt" style="color:#fff;">Nandos <strong style="color:#a87fc9;">4 times.</strong> That's a lifestyle, not a habit.</div>
+          </div>
+          <div class="sec-row"><span class="sec-lbl" style="color:#160d22;">Where it went</span><span class="see-all" style="color:#a87fc9;">See all →</span></div>
+          <div class="cats">
+            <div class="cat" style="background:#fff; box-shadow:0 1px 4px rgba(168,127,201,0.1);">
+              <div class="cat-ico" style="background:#ecdff8;">🍕</div>
+              <div style="flex:1;"><div class="cat-name" style="color:#160d22;">Eating out</div><div class="bar" style="background:#ecdff8;"><div class="bar" style="background:#a87fc9;width:68%;"></div></div></div>
+              <div class="cat-amt" style="color:#160d22;">£128</div>
+            </div>
+            <div class="cat" style="background:#fff; box-shadow:0 1px 4px rgba(168,127,201,0.1);">
+              <div class="cat-ico" style="background:#ecdff8;">🚌</div>
+              <div style="flex:1;"><div class="cat-name" style="color:#160d22;">Transport</div><div class="bar" style="background:#ecdff8;"><div class="bar" style="background:#a87fc9;width:42%;"></div></div></div>
+              <div class="cat-amt" style="color:#160d22;">£74</div>
+            </div>
+          </div>
+          <div class="ask-btn" style="background:#a87fc9;">
+            <div><div class="ask-lbl">ASK CAIT</div><div class="ask-txt">Can I afford this?</div></div>
+            <div class="ask-arr">↗</div>
+          </div>
+        </div>
+        <div class="nav" style="background:#fff; border-top-color:rgba(168,127,201,0.1);">
+          <div class="ni"><div class="ni-icon">⊞</div><div class="ni-dot" style="background:#a87fc9;"></div></div>
+          <div class="ni"><div class="ni-icon">↕</div><div class="ni-lbl">Txns</div></div>
+          <div class="ni"><div class="ni-icon">💬</div><div class="ni-lbl">Ask</div></div>
+          <div class="ni"><div class="ni-icon">⚙</div><div class="ni-lbl">Settings</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="sw" style="background:#faf6ff;"></div>
+      <div class="sw" style="background:#a87fc9;"></div>
+      <div class="sw" style="background:#160d22;"></div>
+    </div>
+    <div class="sw-label">#faf6ff · #a87fc9</div>
+    <div class="vibe">
+      <h4 style="color:#a87fc9;">Lilac</h4>
+      <ul>
+        <li>Gentle, warm, a bit dreamy</li>
+        <li>Completely unique in fintech</li>
+        <li>Risk: might feel too soft</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,234 @@
+<h2>Three design directions</h2>
+<p class="subtitle">Same ingredients — sage green, DM Serif, spacious layout — but three different ideas about what this app <em>is</em>.</p>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+.dir-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 2px solid #e8ede9;
+  overflow: hidden;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.dir-card:hover { border-color: #4a7c59; }
+.dir-card.selected { border-color: #4a7c59; box-shadow: 0 0 0 3px rgba(74,124,89,0.15); }
+
+.dir-preview {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.dir-meta {
+  padding: 16px 20px;
+  border-top: 1px solid #e8ede9;
+}
+.dir-meta h3 { margin: 0 0 6px; font-size: 16px; font-family: 'DM Sans', sans-serif; }
+.dir-meta p { margin: 0; font-size: 13px; color: #555; line-height: 1.6; }
+.dir-meta .idea { font-style: italic; color: #4a7c59; font-size: 13px; font-weight: 600; margin-top: 8px; display: block; }
+.dir-meta .rec { display: inline-block; background: #4a7c59; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-bottom: 6px; letter-spacing: 0.5px; }
+
+.phone-sm {
+  background: #f4f7f4;
+  border-radius: 16px;
+  padding: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+}
+</style>
+
+<!-- DIRECTION A: The Garden -->
+<div class="dir-card" data-choice="garden" onclick="toggleSelect(this)">
+  <div class="dir-preview" style="background: #f9fdf9;">
+
+    <div class="phone-sm" style="background: #f4f7f4;">
+      <div style="color:#7a9e82; font-size:9px; font-weight:600; letter-spacing:0.5px; margin-bottom:4px;">March</div>
+      <div style="font-family:'DM Serif Display',serif; font-size:24px; color:#1a2d1e; letter-spacing:-0.5px; line-height:1;">£342</div>
+      <div style="color:#7a9e82; font-size:9px; margin-bottom:12px;">.80 spent</div>
+      <!-- illustrated category icons -->
+      <div style="display:flex; gap:6px; margin-bottom:10px;">
+        <div style="background:#fff; border-radius:12px; padding:8px 6px; flex:1; text-align:center; box-shadow:0 1px 6px rgba(74,124,89,0.08);">
+          <div style="font-size:16px; margin-bottom:3px;">🍃</div>
+          <div style="color:#4a7c59; font-size:8px; font-weight:700;">Food</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:11px; color:#1a2d1e;">£128</div>
+        </div>
+        <div style="background:#fff; border-radius:12px; padding:8px 6px; flex:1; text-align:center; box-shadow:0 1px 6px rgba(74,124,89,0.08);">
+          <div style="font-size:16px; margin-bottom:3px;">🌱</div>
+          <div style="color:#4a7c59; font-size:8px; font-weight:700;">Travel</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:11px; color:#1a2d1e;">£74</div>
+        </div>
+        <div style="background:#fff; border-radius:12px; padding:8px 6px; flex:1; text-align:center; box-shadow:0 1px 6px rgba(74,124,89,0.08);">
+          <div style="font-size:16px; margin-bottom:3px;">🌿</div>
+          <div style="color:#4a7c59; font-size:8px; font-weight:700;">Bills</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:11px; color:#1a2d1e;">£45</div>
+        </div>
+      </div>
+      <div style="background:#d4e8d8; border-radius:10px; padding:8px 10px; color:#1a2d1e; font-size:9px; font-weight:500;">💬 Ask me anything...</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="background:#fff; border-radius:12px; padding:12px; box-shadow:0 1px 8px rgba(74,124,89,0.06);">
+        <div style="color:#7a9e82; font-size:9px; font-weight:600; letter-spacing:0.5px; margin-bottom:6px;">RECENT</div>
+        <div style="display:flex; flex-direction:column; gap:5px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:12px;">🌾</span><span style="color:#1a2d1e; font-size:10px;">Tesco</span></div>
+            <span style="color:#1a2d1e; font-size:10px; font-family:'DM Serif Display',serif;">−£14</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:12px;">🍵</span><span style="color:#1a2d1e; font-size:10px;">Costa</span></div>
+            <span style="color:#1a2d1e; font-size:10px; font-family:'DM Serif Display',serif;">−£4</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1a2d1e; border-radius:12px; padding:12px;">
+        <div style="color:#7dd3b8; font-size:9px; font-weight:600; margin-bottom:4px;">GROWING WELL</div>
+        <div style="color:#fff; font-size:10px; line-height:1.4;">"You spent 18% less eating out than last month 🌱"</div>
+      </div>
+    </div>
+  </div>
+  <div class="dir-meta">
+    <h3>A — The Garden</h3>
+    <p>The core metaphor: money is something you <em>grow</em>, not just track. Nature-inspired icons, botanical language in AI responses ("growing well", "your spending is blooming"), organic card shapes. Warm and distinctly non-financial.</p>
+    <span class="idea">"Your money is a living thing. Tend to it."</span>
+  </div>
+</div>
+
+<!-- DIRECTION B: The Journal -->
+<div class="dir-card" data-choice="journal" onclick="toggleSelect(this)">
+  <div class="dir-preview" style="background: #f8f9f8;">
+
+    <div class="phone-sm" style="background: #f4f7f4;">
+      <div style="color:#7a9e82; font-size:9px; font-weight:500; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;">March 2026</div>
+      <div style="border-left: 2px solid #4a7c59; padding-left:10px; margin-bottom:12px;">
+        <div style="font-family:'DM Serif Display',serif; font-size:26px; color:#1a2d1e; letter-spacing:-1px; line-height:1;">£342.80</div>
+        <div style="color:#7a9e82; font-size:9px; margin-top:2px;">total this month</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:24px; height:24px; background:#e8f4ec; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0;">🍕</div>
+          <div style="flex:1;">
+            <div style="color:#1a2d1e; font-size:10px; font-weight:600;">Eating out</div>
+            <div style="height:3px; background:#e8ede9; border-radius:2px; margin-top:3px;"><div style="width:68%; height:100%; background:#4a7c59; border-radius:2px;"></div></div>
+          </div>
+          <div style="font-family:'DM Serif Display',serif; font-size:11px; color:#1a2d1e; flex-shrink:0;">£128</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:24px; height:24px; background:#e8f4ec; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0;">🚌</div>
+          <div style="flex:1;">
+            <div style="color:#1a2d1e; font-size:10px; font-weight:600;">Transport</div>
+            <div style="height:3px; background:#e8ede9; border-radius:2px; margin-top:3px;"><div style="width:42%; height:100%; background:#7a9e82; border-radius:2px;"></div></div>
+          </div>
+          <div style="font-family:'DM Serif Display',serif; font-size:11px; color:#1a2d1e; flex-shrink:0;">£74</div>
+        </div>
+      </div>
+      <div style="background:#fff; border-radius:8px; padding:8px 10px; border-left:2px solid #d4e8d8;">
+        <div style="color:#7a9e82; font-size:8px; font-weight:600; margin-bottom:2px;">LATEST</div>
+        <div style="color:#1a2d1e; font-size:9px;">Tesco Express · today</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:11px; color:#1a2d1e;">−£14.30</div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="background:#1a2d1e; border-radius:12px; padding:12px; flex:1;">
+        <div style="color:#7a9e82; font-size:8px; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">This week</div>
+        <div style="display:flex; align-items:flex-end; gap:3px; height:40px; margin-bottom:6px;">
+          <div style="flex:1; background:rgba(255,255,255,0.15); border-radius:2px; height:45%;"></div>
+          <div style="flex:1; background:rgba(255,255,255,0.2); border-radius:2px; height:60%;"></div>
+          <div style="flex:1; background:rgba(255,255,255,0.15); border-radius:2px; height:35%;"></div>
+          <div style="flex:1; background:#7dd3b8; border-radius:2px; height:100%;"></div>
+          <div style="flex:1; background:rgba(255,255,255,0.1); border-radius:2px; height:20%;"></div>
+          <div style="flex:1; background:rgba(255,255,255,0.1); border-radius:2px; height:20%;"></div>
+          <div style="flex:1; background:rgba(255,255,255,0.1); border-radius:2px; height:20%;"></div>
+        </div>
+        <div style="color:#fff; font-size:9px; opacity:0.7;">Wed was your biggest day</div>
+      </div>
+      <div style="background:#fff; border-radius:12px; padding:12px; box-shadow:0 1px 8px rgba(74,124,89,0.06);">
+        <div style="color:#7a9e82; font-size:8px; font-weight:600; letter-spacing:0.5px; margin-bottom:6px;">ASK</div>
+        <div style="color:#1a2d1e; font-size:9px; font-style:italic; line-height:1.5;">"How much on coffee last month?"</div>
+        <div style="color:#4a7c59; font-size:9px; font-weight:600; margin-top:4px;">→ £47.50 across 12 visits</div>
+      </div>
+    </div>
+  </div>
+  <div class="dir-meta">
+    <div class="rec">MY RECOMMENDATION</div>
+    <h3>B — The Journal</h3>
+    <p>The core metaphor: a personal financial journal — structured, reflective, yours. Clean editorial grid, strong typographic hierarchy, understated data visualisation. The AI feels like a quiet assistant, not a chatbot. Disciplined but warm.</p>
+    <span class="idea">"A thoughtful record of your financial life."</span>
+  </div>
+</div>
+
+<!-- DIRECTION C: The Companion -->
+<div class="dir-card" data-choice="companion" onclick="toggleSelect(this)">
+  <div class="dir-preview" style="background: #f6fbf7;">
+
+    <div class="phone-sm" style="background: #f4f7f4;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div>
+          <div style="color:#7a9e82; font-size:9px; font-weight:600;">Hey Sam 👋</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:22px; color:#1a2d1e; letter-spacing:-0.5px; line-height:1.1;">You've spent</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:22px; color:#4a7c59; letter-spacing:-0.5px;">£342.80</div>
+        </div>
+        <div style="width:38px; height:38px; background:#d4e8d8; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">🌿</div>
+      </div>
+      <div style="background:#fff; border-radius:12px; padding:10px; box-shadow:0 1px 8px rgba(74,124,89,0.08); margin-bottom:8px;">
+        <div style="color:#4a7c59; font-size:9px; font-weight:700; margin-bottom:5px;">✦ Worth knowing</div>
+        <div style="color:#1a2d1e; font-size:10px; line-height:1.5;">You're spending <strong>18% less</strong> on eating out than last month. Nice.</div>
+      </div>
+      <div style="display:flex; gap:6px; margin-bottom:8px;">
+        <div style="background:#fff; border-radius:10px; padding:8px; flex:1; box-shadow:0 1px 6px rgba(74,124,89,0.06);">
+          <div style="font-size:13px; margin-bottom:3px;">🍕</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:12px; color:#1a2d1e;">£128</div>
+          <div style="color:#7a9e82; font-size:8px;">food</div>
+        </div>
+        <div style="background:#fff; border-radius:10px; padding:8px; flex:1; box-shadow:0 1px 6px rgba(74,124,89,0.06);">
+          <div style="font-size:13px; margin-bottom:3px;">🚌</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:12px; color:#1a2d1e;">£74</div>
+          <div style="color:#7a9e82; font-size:8px;">travel</div>
+        </div>
+        <div style="background:#fff; border-radius:10px; padding:8px; flex:1; box-shadow:0 1px 6px rgba(74,124,89,0.06);">
+          <div style="font-size:13px; margin-bottom:3px;">🛍</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:12px; color:#1a2d1e;">£61</div>
+          <div style="color:#7a9e82; font-size:8px;">shopping</div>
+        </div>
+      </div>
+      <div style="background:#1a2d1e; border-radius:10px; padding:8px 10px; color:#d4e8d8; font-size:9px;">💬 What do you want to know?</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="background:#fff; border-radius:12px; padding:12px; box-shadow:0 1px 8px rgba(74,124,89,0.06);">
+        <div style="color:#7a9e82; font-size:8px; font-weight:600; letter-spacing:0.5px; margin-bottom:6px;">RECENT</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="color:#1a2d1e; font-size:10px; font-weight:600;">Tesco Express</div>
+              <div style="color:#7a9e82; font-size:8px;">Groceries · today</div>
+            </div>
+            <div style="font-family:'DM Serif Display',serif; font-size:11px; color:#1a2d1e;">−£14.30</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="color:#1a2d1e; font-size:10px; font-weight:600;">TfL Oyster</div>
+              <div style="color:#7a9e82; font-size:8px;">Transport · today</div>
+            </div>
+            <div style="font-family:'DM Serif Display',serif; font-size:11px; color:#1a2d1e;">−£3.40</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#4a7c59; border-radius:12px; padding:12px;">
+        <div style="color:rgba(255,255,255,0.7); font-size:8px; font-weight:600; letter-spacing:0.5px; margin-bottom:4px;">SUGGESTED</div>
+        <div style="color:#fff; font-size:9px; line-height:1.5; font-style:italic;">"Am I spending more than last month?"</div>
+      </div>
+    </div>
+  </div>
+  <div class="dir-meta">
+    <h3>C — The Companion</h3>
+    <p>The core metaphor: a friendly, proactive companion who surfaces insights unprompted. Conversational tone, AI-first layout — the dashboard leads with an observation, not just a number. Warm but risks feeling patronising if the copy isn't perfect.</p>
+    <span class="idea">"Less dashboard. More dialogue."</span>
+  </div>
+</div>
+
+<p class="subtitle" style="font-style:italic; margin-top:8px;">B is my recommendation — but tell me where I'm wrong.</p>

@@ -1,0 +1,17 @@
+-- The RLS policy on transactions filters rows via a subquery into
+-- bank_connections: "bank_connection_id in (select id from bank_connections
+-- where user_id = auth.uid())". Evaluating that subquery requires the
+-- querying role to have SELECT on the specific columns it touches — id and
+-- user_id — even though cait_reader was never meant to read bank_connections
+-- directly. Without this, every query against transactions fails with
+-- "permission denied for table bank_connections", even though the query
+-- itself never mentions that table.
+--
+-- Column-level GRANT is the right tool: it lets RLS's internal subquery run
+-- without exposing access_token/refresh_token — those columns still have
+-- zero grant, so a query that asks for them directly still fails exactly as
+-- before (proven: see the bank_connections test that already failed
+-- correctly). id and user_id are a bank connection's own primary key and
+-- its owner's uuid — not sensitive on their own, and RLS still applies if
+-- they're ever queried directly, same as any other read of this table.
+grant select (id, user_id) on bank_connections to cait_reader;

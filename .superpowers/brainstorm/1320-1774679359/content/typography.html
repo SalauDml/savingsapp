@@ -1,0 +1,167 @@
+<h2>Same app. Three different voices.</h2>
+<p class="subtitle">Typography is the personality behind the colour. Each typeface below says something different about who this app is.</p>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  .typo-card {
+    background: #f4f7f4;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+  .typo-card:hover { border-color: #4a7c59; }
+  .typo-card.selected { border-color: #4a7c59; box-shadow: 0 0 0 3px rgba(74,124,89,0.15); }
+
+  .phone-mock {
+    background: #f4f7f4;
+    padding: 24px 20px 16px;
+    position: relative;
+  }
+
+  .typo-label {
+    padding: 14px 20px;
+    background: #fff;
+    border-top: 1px solid #e8ede9;
+  }
+  .typo-label h3 { margin: 0 0 4px; font-size: 15px; }
+  .typo-label p { margin: 0; font-size: 13px; color: #666; line-height: 1.5; }
+  .typo-label .tag { display: inline-block; background: #e8ede9; color: #4a7c59; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; margin-top: 6px; }
+</style>
+
+<!-- OPTION A: Rounded / Friendly -->
+<div class="typo-card" data-choice="rounded" onclick="toggleSelect(this)">
+  <div class="phone-mock" style="font-family: 'Nunito', sans-serif;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px;">
+      <div>
+        <div style="color: #7a9e82; font-size: 12px; font-weight: 600; letter-spacing: 0.3px;">Good morning, Sam</div>
+        <div style="color: #1a2d1e; font-size: 28px; font-weight: 800; margin-top: 2px; letter-spacing: -0.5px;">£342.80</div>
+        <div style="color: #7a9e82; font-size: 13px; font-weight: 600;">spent this month</div>
+      </div>
+      <div style="width: 44px; height: 44px; background: #d4e8d8; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🌿</div>
+    </div>
+    <div style="background: #fff; border-radius: 14px; padding: 14px 16px; box-shadow: 0 2px 12px rgba(74,124,89,0.08); margin-bottom: 10px;">
+      <div style="color: #7a9e82; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px;">Top categories</div>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+        <div style="width: 32px; height: 32px; background: #e8f4ec; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🍕</div>
+        <div style="flex: 1;">
+          <div style="color: #1a2d1e; font-size: 13px; font-weight: 700;">Eating out</div>
+          <div style="height: 5px; background: #e8ede9; border-radius: 3px; margin-top: 4px;"><div style="width: 68%; height: 100%; background: #4a7c59; border-radius: 3px;"></div></div>
+        </div>
+        <div style="color: #1a2d1e; font-size: 13px; font-weight: 800;">£128</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 32px; height: 32px; background: #e8f4ec; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🚌</div>
+        <div style="flex: 1;">
+          <div style="color: #1a2d1e; font-size: 13px; font-weight: 700;">Transport</div>
+          <div style="height: 5px; background: #e8ede9; border-radius: 3px; margin-top: 4px;"><div style="width: 42%; height: 100%; background: #7a9e82; border-radius: 3px;"></div></div>
+        </div>
+        <div style="color: #1a2d1e; font-size: 13px; font-weight: 800;">£74</div>
+      </div>
+    </div>
+    <div style="background: #d4e8d8; border-radius: 12px; padding: 11px 14px; display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 16px;">💬</span>
+      <span style="color: #1a2d1e; font-size: 13px; font-weight: 700;">Ask me anything about your spending</span>
+    </div>
+  </div>
+  <div class="typo-label">
+    <div style="font-family: 'Nunito', sans-serif;">
+      <h3 style="font-weight: 800;">A — Rounded & Friendly</h3>
+      <p>Typeface: <strong>Nunito</strong> — rounded letterforms, bouncy and approachable. The same family used by apps like Notion and Headspace. Feels like it's smiling at you.</p>
+      <span class="tag">Warm · Casual · Encouraging</span>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION B: Clean geometric -->
+<div class="typo-card" data-choice="geometric" onclick="toggleSelect(this)">
+  <div class="phone-mock" style="font-family: 'DM Sans', sans-serif;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px;">
+      <div>
+        <div style="color: #7a9e82; font-size: 11px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase;">Good morning, Sam</div>
+        <div style="color: #1a2d1e; font-size: 28px; font-weight: 700; margin-top: 4px; letter-spacing: -1px;">£342.80</div>
+        <div style="color: #7a9e82; font-size: 13px;">spent this month</div>
+      </div>
+      <div style="width: 44px; height: 44px; background: #d4e8d8; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🌿</div>
+    </div>
+    <div style="background: #fff; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 12px rgba(74,124,89,0.08); margin-bottom: 10px;">
+      <div style="color: #7a9e82; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">Top categories</div>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+        <div style="width: 32px; height: 32px; background: #e8f4ec; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🍕</div>
+        <div style="flex: 1;">
+          <div style="color: #1a2d1e; font-size: 13px; font-weight: 600;">Eating out</div>
+          <div style="height: 4px; background: #e8ede9; border-radius: 2px; margin-top: 5px;"><div style="width: 68%; height: 100%; background: #4a7c59; border-radius: 2px;"></div></div>
+        </div>
+        <div style="color: #1a2d1e; font-size: 13px; font-weight: 700;">£128</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 32px; height: 32px; background: #e8f4ec; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🚌</div>
+        <div style="flex: 1;">
+          <div style="color: #1a2d1e; font-size: 13px; font-weight: 600;">Transport</div>
+          <div style="height: 4px; background: #e8ede9; border-radius: 2px; margin-top: 5px;"><div style="width: 42%; height: 100%; background: #7a9e82; border-radius: 2px;"></div></div>
+        </div>
+        <div style="color: #1a2d1e; font-size: 13px; font-weight: 700;">£74</div>
+      </div>
+    </div>
+    <div style="background: #d4e8d8; border-radius: 10px; padding: 11px 14px; display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 16px;">💬</span>
+      <span style="color: #1a2d1e; font-size: 13px; font-weight: 500;">Ask me anything about your spending</span>
+    </div>
+  </div>
+  <div class="typo-label">
+    <div style="font-family: 'DM Sans', sans-serif;">
+      <h3 style="font-weight: 700;">B — Clean & Considered</h3>
+      <p>Typeface: <strong>DM Sans</strong> — humanist geometric, calm and highly readable. Used across a lot of modern fintech. Calm without being boring. Feels intelligent and considered.</p>
+      <span class="tag">Balanced · Clear · Modern</span>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION C: Soft editorial -->
+<div class="typo-card" data-choice="editorial" onclick="toggleSelect(this)">
+  <div class="phone-mock" style="font-family: 'DM Sans', sans-serif;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px;">
+      <div>
+        <div style="color: #7a9e82; font-size: 11px; font-weight: 500; letter-spacing: 0.5px;">Good morning, Sam</div>
+        <div style="color: #1a2d1e; font-size: 30px; font-weight: 400; margin-top: 2px; letter-spacing: -0.5px; font-family: 'DM Serif Display', serif;">£342.80</div>
+        <div style="color: #7a9e82; font-size: 13px;">spent this month</div>
+      </div>
+      <div style="width: 44px; height: 44px; background: #d4e8d8; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🌿</div>
+    </div>
+    <div style="background: #fff; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 12px rgba(74,124,89,0.08); margin-bottom: 10px;">
+      <div style="color: #7a9e82; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">Top categories</div>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+        <div style="width: 32px; height: 32px; background: #e8f4ec; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🍕</div>
+        <div style="flex: 1;">
+          <div style="color: #1a2d1e; font-size: 14px; font-weight: 400; font-family: 'DM Serif Display', serif;">Eating out</div>
+          <div style="height: 4px; background: #e8ede9; border-radius: 2px; margin-top: 5px;"><div style="width: 68%; height: 100%; background: #4a7c59; border-radius: 2px;"></div></div>
+        </div>
+        <div style="color: #1a2d1e; font-size: 14px; font-weight: 400; font-family: 'DM Serif Display', serif;">£128</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 32px; height: 32px; background: #e8f4ec; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🚌</div>
+        <div style="flex: 1;">
+          <div style="color: #1a2d1e; font-size: 14px; font-weight: 400; font-family: 'DM Serif Display', serif;">Transport</div>
+          <div style="height: 4px; background: #e8ede9; border-radius: 2px; margin-top: 5px;"><div style="width: 42%; height: 100%; background: #7a9e82; border-radius: 2px;"></div></div>
+        </div>
+        <div style="color: #1a2d1e; font-size: 14px; font-weight: 400; font-family: 'DM Serif Display', serif;">£74</div>
+      </div>
+    </div>
+    <div style="background: #d4e8d8; border-radius: 10px; padding: 11px 14px; display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 16px;">💬</span>
+      <span style="color: #1a2d1e; font-size: 13px;">Ask me anything about your spending</span>
+    </div>
+  </div>
+  <div class="typo-label">
+    <div style="font-family: 'DM Sans', sans-serif;">
+      <h3 style="font-weight: 700;">C — Editorial & Calm</h3>
+      <p>Display typeface: <strong>DM Serif Display</strong> for headlines and numbers, DM Sans for body text. The serif adds warmth and gravitas to big numbers — like a thoughtful magazine rather than a tech app.</p>
+      <span class="tag">Distinctive · Warm · Grounded</span>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 8px; font-style: italic;">Notice: A feels like a friend, B feels like a tool, C feels like a trusted advisor. Same palette, same layout — different voice entirely.</p>
