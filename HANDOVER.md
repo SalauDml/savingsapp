@@ -271,14 +271,16 @@ Required in `apps/mobile/.env`:
 ```
 EXPO_PUBLIC_SUPABASE_URL=https://dbpzbzwrzwnfwaxtzyic.supabase.co
 EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<your anon key>
-EXPO_PUBLIC_TRUELAYER_CLIENT_ID=sandbox-cait-2d49e4
+EXPO_PUBLIC_MONZO_CLIENT_ID=<your Monzo client id>
 ```
 
 Required in Supabase Edge Function secrets (via Supabase dashboard):
 ```
-TRUELAYER_CLIENT_ID=sandbox-cait-2d49e4
-TRUELAYER_CLIENT_SECRET=<your TrueLayer sandbox secret>
+MONZO_CLIENT_ID=<your Monzo client id>
+MONZO_CLIENT_SECRET=<your Monzo client secret>
 ```
+
+**Why the client id appears in both places but the secret only appears once:** `client_id` isn't actually secret — it's visible in the OAuth redirect URL itself, which any user's browser/app sees anyway, so bundling it into the Expo app (`EXPO_PUBLIC_*` vars get compiled into the client) changes nothing about what an attacker could learn. `client_secret` is different — it authenticates *your server* to Monzo when exchanging a code for tokens, so it only ever lives in Edge Function secrets, never in an `EXPO_PUBLIC_*` var, because anything with that prefix ships inside the app bundle and can be extracted by anyone who downloads the app.
 
 **Note on Supabase key system (new projects, post-June 2025):**
 - `anon` and `service_role` keys are legacy. New projects use `sb_publishable_...` and `sb_secret_...` keys.

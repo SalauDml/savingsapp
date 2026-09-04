@@ -24,7 +24,23 @@ export default function CallbackScreen() {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
-      if (fnError) {setError(true); return; }
+      if (fnError) {
+        // The "something went wrong" screen below never shows WHY - it's
+        // been swallowing the actual reason. fnError here is a
+        // FunctionsHttpError whose real payload (whatever exchange-token's
+        // JSON error body said - a bad code, a Monzo rejection, a DB error)
+        // is on .context, the raw Response, not on the error itself.
+        console.log('exchange-token failed:', fnError.message);
+        if ('context' in fnError && fnError.context?.json) {
+          try {
+            console.log('exchange-token error body:', JSON.stringify(await fnError.context.json()));
+          } catch (parseErr) {
+            console.log('could not parse exchange-token error body:', parseErr);
+          }
+        }
+        setError(true);
+        return;
+      }
       router.replace('/(tabs)');
     }
 
