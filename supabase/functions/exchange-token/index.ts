@@ -13,20 +13,26 @@ Deno.serve(async (req) => {
   const { code } = await req.json()
   console.log('code received:', code)
 
-  const tokenRes = await fetch('https://auth.truelayer-sandbox.com/connect/token', {
+  // Must match connect-bank.tsx's REDIRECT_URI exactly (including the
+  // trailing slash) - OAuth2 requires the token endpoint's redirect_uri to
+  // be identical to the one used to obtain the code, or Monzo rejects the
+  // exchange. This is the static GitHub Pages landing page, not
+  // cait://auth/callback directly - see connect-bank.tsx's REDIRECT_URI
+  // comment for why.
+  const tokenRes = await fetch('https://api.monzo.com/oauth2/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: Deno.env.get('TRUELAYER_CLIENT_ID') ?? '',
-      client_secret: Deno.env.get('TRUELAYER_CLIENT_SECRET') ?? '',
-      code,
-      redirect_uri: 'cait://auth/callback',
+      client_id: Deno.env.get('MONZO_CLIENT_ID') ?? '',
+      client_secret: Deno.env.get('MONZO_CLIENT_SECRET') ?? '',
+      code:code,
+      redirect_uri: 'https://salaudml.github.io/cait-oauth-redirect/',
     }),
   })
 
   const tokens = await tokenRes.json()
-  console.log('truelayer response:', JSON.stringify(tokens))
+  console.log('monzo token response:', JSON.stringify(tokens))
 
   if (!tokenRes.ok) {
     return new Response(JSON.stringify({ error: tokens }), { status: 400 })
@@ -41,13 +47,20 @@ Deno.serve(async (req) => {
 
   const { error: dbError } = await supabase
     .from('bank_connections')
-    .insert({
+    .upsert({
       user_id: user.id,
-      bank_name: tokens.provider ?? 'Unknown',
+      // Monzo's token response doesn't include a provider/bank name field
+      // (unlike TrueLayer's `tokens.provider`) - there's nothing to pick
+      // between, since this OAuth client only ever talks to Monzo.
+      bank_name: 'Monzo',
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
-      token_expires_at: '2026-01-01T00:00:00Z',
-    })
+      token_expires_at: new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
+    // onConflict: 'user_id' relies on the unique constraint added in
+    // migration 20260904000001 - without it, re-connecting (e.g. after a
+    // revoked token forces a re-auth) would insert a second row instead of
+    // replacing this one, which fetch-transactions' .single() can't handle.
+    }, { onConflict: 'user_id' })
 
   if (dbError) {
     console.log('db error:', dbError.message, '| code:', dbError.code, '| details:', dbError.details)

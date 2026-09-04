@@ -368,6 +368,13 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+[functions.oauth-redirect]
+# This is a plain browser navigation (a link tap), not a call from our own
+# app via supabase.functions.invoke() - there's no Authorization header to
+# check, and no user session involved, so the platform's default JWT gate
+# would just reject every real request with a 401 before our code ever ran.
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

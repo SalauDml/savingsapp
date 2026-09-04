@@ -11,6 +11,67 @@ const supabase = createClient(
 
 const BATCH_SIZE = 25
 
+// Worked examples, not just described rules — same idiom as ask-cait's
+// FEW_SHOT_EXAMPLES, duplicated from categorise-transactions rather than
+// shared, matching this file's existing "duplicated so this function stays
+// independently deployable" philosophy (see validateCategorisations below).
+//
+// The category/transaction ids here (ex-cat-…, ex-tx-…) are deliberately
+// fake and easy to spot as fake — real ids are Postgres UUIDs. Without an
+// obvious tell, the model could echo one of these back in a real answer
+// instead of picking a real category_id from the list it's actually given.
+// The reminder at the end of systemPrompt says this explicitly too.
+const FEW_SHOT_EXAMPLES = [
+  { role: 'user', content: JSON.stringify({
+    categories: [
+      { id: 'ex-cat-groceries', name: 'Groceries', kind: 'spending' },
+      { id: 'ex-cat-eating-out', name: 'Eating Out', kind: 'spending' },
+      { id: 'ex-cat-bills', name: 'Bills & Subscriptions', kind: 'spending' },
+      { id: 'ex-cat-cash', name: 'Cash', kind: 'transfer' },
+      { id: 'ex-cat-uncategorised', name: 'Uncategorised', kind: 'spending' },
+    ],
+    transactions: [
+      { id: 'ex-tx-1', merchant_name: "MCDONALD'S BRIGHTON", amount: -650 },
+      { id: 'ex-tx-2', merchant_name: 'TESCO STORES 2909', amount: -3412 },
+      { id: 'ex-tx-3', merchant_name: 'NETFLIX.COM', amount: -1099 },
+      { id: 'ex-tx-4', merchant_name: 'LNK*ATM WITHDRAWAL', amount: -2000 },
+      { id: 'ex-tx-5', merchant_name: 'REF 837462910', amount: -150 },
+    ],
+  }) },
+  { role: 'assistant', content: JSON.stringify({ results: [
+    { id: 'ex-tx-1', category_id: 'ex-cat-eating-out' },   // fast food merchant → Eating Out, not Groceries or Uncategorised
+    { id: 'ex-tx-2', category_id: 'ex-cat-groceries' },
+    { id: 'ex-tx-3', category_id: 'ex-cat-bills' },        // recurring subscription → Bills & Subscriptions, not Entertainment
+    { id: 'ex-tx-4', category_id: 'ex-cat-cash' },
+    { id: 'ex-tx-5', category_id: 'ex-cat-uncategorised' }, // a bare reference number genuinely tells you nothing — correct to decline here
+  ] }) },
+
+  { role: 'user', content: JSON.stringify({
+    categories: [
+      { id: 'ex-cat-transfers', name: 'Transfers', kind: 'transfer' },
+      { id: 'ex-cat-income', name: 'Income', kind: 'income' },
+      { id: 'ex-cat-entertainment', name: 'Entertainment', kind: 'spending' },
+      { id: 'ex-cat-fees', name: 'Fees & Charges', kind: 'spending' },
+    ],
+    transactions: [
+      { id: 'ex-tx-6', merchant_name: 'JOHN SMITH', amount: -2500 },
+      { id: 'ex-tx-7', merchant_name: 'ACME LTD PAYROLL', amount: 145000 },
+      { id: 'ex-tx-8', merchant_name: 'BET365', amount: -2000 },
+      { id: 'ex-tx-9', merchant_name: 'BET365', amount: 5000 },
+      { id: 'ex-tx-10', merchant_name: 'COINBASE', amount: -10000 },
+      { id: 'ex-tx-11', merchant_name: 'DD RETURNED - BRITISH GAS', amount: 4500 },
+    ],
+  }) },
+  { role: 'assistant', content: JSON.stringify({ results: [
+    { id: 'ex-tx-6', category_id: 'ex-cat-transfers' },     // a person's name → Transfers
+    { id: 'ex-tx-7', category_id: 'ex-cat-income' },        // wages → Income
+    { id: 'ex-tx-8', category_id: 'ex-cat-entertainment' }, // betting spend (negative) → Entertainment
+    { id: 'ex-tx-9', category_id: 'ex-cat-income' },        // same merchant, positive (a win) → Income, not Entertainment
+    { id: 'ex-tx-10', category_id: 'ex-cat-transfers' },    // crypto platform → Transfers, money isn't spent, it's moved into an asset
+    { id: 'ex-tx-11', category_id: 'ex-cat-income' },       // returned direct debit is money coming BACK → Income, not Fees & Charges
+  ] }) },
+]
+
 // Shapes for the untyped .rpc() results below — no generated Database type
 // to infer from, so we assert these once here instead of `any`-ing everywhere.
 type ClaimedTransaction = {
@@ -130,25 +191,42 @@ Each category has a "kind":
   income   — money arriving in the account
   transfer — money moving without being spent (savings, sending money to a person, cash out)
 
+Do not trust the merchant name alone to tell you which of these applies — check "amount" on every
+transaction. amount is the signed value in pence: negative means money left the account, positive
+means money arrived. This is ground truth about direction, and it overrides any guess you'd
+otherwise make from the text. A category with kind "spending" must never be assigned to a positive
+amount — if the merchant name doesn't clearly explain a positive amount as wages, a refund, cashback
+or a transfer, that is still not a reason to fall back to a spending category. Prefer Income in that
+case; only prefer Transfer if something in the description points more specifically at a transfer.
+
 Guidance for common UK bank descriptions:
 - A person's name usually means money sent to or received from someone → a transfer.
 - ATM or cash machine withdrawals → Cash.
 - Wages, student loans, benefits, tax credits, refunds and cashback → Income.
 - Round-up or savings transfers (e.g. "SAVE THE CHANGE", Monzo's round-up feature) → Transfers.
-- Bank charges, overdraft fees and returned direct debits → Fees & Charges.
+- Bank charges and overdraft fees → Fees & Charges — this is money actually leaving the account
+  as a cost.
+- A returned or bounced direct debit → Income, not Fees & Charges. Same reasoning as a refund: the
+  payment reversed, so the money is arriving back, not leaving.
 - A recurring media or software service → Bills & Subscriptions, not Entertainment.
 - A crypto or trading platform (Circle, Coinbase, eToro, or anything with "trading" in the name)
   → Transfers — the money isn't spent, it's moved into an asset the student still holds.
 - A betting, casino or gaming operator (Bet365, Betfred, Betropolis, anything with "bet" or
-  "gaming" in the name) → Entertainment.
+  "gaming" in the name) → Entertainment, but only for money going to them — that's the actual
+  spend. A win or cashout coming back from one → Income, not Entertainment, for the same reason
+  as the direct debit case above: money arriving from outside, not still held anywhere.
 - A wholesaler or cash-and-carry (Booker, Costco) → Groceries.
 
 Only ever use a category_id from the provided list — never invent one.
-Respond with ONLY JSON in this exact shape: {"results": [{"id": "<transaction-id>", "category_id": "<category-id>"}]}`
+Respond with ONLY JSON in this exact shape: {"results": [{"id": "<transaction-id>", "category_id": "<category-id>"}]}
+
+The worked examples you'll see use ids like "ex-cat-…" and "ex-tx-…" purely to demonstrate the task —
+never write one of those ids into your actual answer. Always take id and category_id values from the
+real categories and transactions given to you in this request.`
 
     const userPrompt = JSON.stringify({
       categories: categories.map((c) => ({ id: c.id, name: c.name, kind: c.kind })),
-      transactions: userTransactions.map((t) => ({ id: t.id, merchant_name: t.merchant_name })),
+      transactions: userTransactions.map((t) => ({ id: t.id, merchant_name: t.merchant_name, amount: t.amount })),
     })
 
     const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -165,6 +243,7 @@ Respond with ONLY JSON in this exact shape: {"results": [{"id": "<transaction-id
         temperature: 0,
         messages: [
           { role: 'system', content: systemPrompt },
+          ...FEW_SHOT_EXAMPLES,
           { role: 'user', content: userPrompt },
         ],
       }),

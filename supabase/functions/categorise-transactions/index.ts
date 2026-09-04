@@ -2,6 +2,70 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const BATCH_SIZE = 50
 
+// Worked examples, not just described rules — same idiom as ask-cait's
+// FEW_SHOT_EXAMPLES. The bullet list below already *describes* these rules;
+// showing the model an actual input/output pair for each is what makes it
+// reliably apply them, especially the sign-based ones (a betting merchant
+// is Entertainment when negative but Income when positive) that are easy to
+// get half-right from prose alone.
+//
+// The category/transaction ids here (ex-cat-…, ex-tx-…) are deliberately
+// fake and easy to spot as fake — real ids are Postgres UUIDs. That's not
+// cosmetic: without an obvious tell, the model could latch onto one of
+// these ids and echo it back in a real answer instead of picking a real
+// category_id from the actual list it's given. The reminder at the end of
+// systemPrompt says this explicitly too — belt and braces.
+const FEW_SHOT_EXAMPLES = [
+  { role: 'user', content: JSON.stringify({
+    categories: [
+      { id: 'ex-cat-groceries', name: 'Groceries', kind: 'spending' },
+      { id: 'ex-cat-eating-out', name: 'Eating Out', kind: 'spending' },
+      { id: 'ex-cat-bills', name: 'Bills & Subscriptions', kind: 'spending' },
+      { id: 'ex-cat-cash', name: 'Cash', kind: 'transfer' },
+      { id: 'ex-cat-uncategorised', name: 'Uncategorised', kind: 'spending' },
+    ],
+    transactions: [
+      { id: 'ex-tx-1', merchant_name: "MCDONALD'S BRIGHTON", amount: -650 },
+      { id: 'ex-tx-2', merchant_name: 'TESCO STORES 2909', amount: -3412 },
+      { id: 'ex-tx-3', merchant_name: 'NETFLIX.COM', amount: -1099 },
+      { id: 'ex-tx-4', merchant_name: 'LNK*ATM WITHDRAWAL', amount: -2000 },
+      { id: 'ex-tx-5', merchant_name: 'REF 837462910', amount: -150 },
+    ],
+  }) },
+  { role: 'assistant', content: JSON.stringify({ results: [
+    { id: 'ex-tx-1', category_id: 'ex-cat-eating-out' },   // fast food merchant → Eating Out, not Groceries or Uncategorised
+    { id: 'ex-tx-2', category_id: 'ex-cat-groceries' },
+    { id: 'ex-tx-3', category_id: 'ex-cat-bills' },        // recurring subscription → Bills & Subscriptions, not Entertainment
+    { id: 'ex-tx-4', category_id: 'ex-cat-cash' },
+    { id: 'ex-tx-5', category_id: 'ex-cat-uncategorised' }, // a bare reference number genuinely tells you nothing — correct to decline here
+  ] }) },
+
+  { role: 'user', content: JSON.stringify({
+    categories: [
+      { id: 'ex-cat-transfers', name: 'Transfers', kind: 'transfer' },
+      { id: 'ex-cat-income', name: 'Income', kind: 'income' },
+      { id: 'ex-cat-entertainment', name: 'Entertainment', kind: 'spending' },
+      { id: 'ex-cat-fees', name: 'Fees & Charges', kind: 'spending' },
+    ],
+    transactions: [
+      { id: 'ex-tx-6', merchant_name: 'JOHN SMITH', amount: -2500 },
+      { id: 'ex-tx-7', merchant_name: 'ACME LTD PAYROLL', amount: 145000 },
+      { id: 'ex-tx-8', merchant_name: 'BET365', amount: -2000 },
+      { id: 'ex-tx-9', merchant_name: 'BET365', amount: 5000 },
+      { id: 'ex-tx-10', merchant_name: 'COINBASE', amount: -10000 },
+      { id: 'ex-tx-11', merchant_name: 'DD RETURNED - BRITISH GAS', amount: 4500 },
+    ],
+  }) },
+  { role: 'assistant', content: JSON.stringify({ results: [
+    { id: 'ex-tx-6', category_id: 'ex-cat-transfers' },     // a person's name → Transfers
+    { id: 'ex-tx-7', category_id: 'ex-cat-income' },        // wages → Income
+    { id: 'ex-tx-8', category_id: 'ex-cat-entertainment' }, // betting spend (negative) → Entertainment
+    { id: 'ex-tx-9', category_id: 'ex-cat-income' },        // same merchant, positive (a win) → Income, not Entertainment
+    { id: 'ex-tx-10', category_id: 'ex-cat-transfers' },    // crypto platform → Transfers, money isn't spent, it's moved into an asset
+    { id: 'ex-tx-11', category_id: 'ex-cat-income' },       // returned direct debit is money coming BACK → Income, not Fees & Charges
+  ] }) },
+]
+
 Deno.serve(async (req) => {
   const authHeader = req.headers.get('Authorization')
 
@@ -93,7 +157,11 @@ Guidance for common UK bank descriptions:
 - A wholesaler or cash-and-carry (Booker, Costco) → Groceries.
 
 Only ever use a category_id from the provided list — never invent one.
-Respond with ONLY JSON in this exact shape: {"results": [{"id": "<transaction-id>", "category_id": "<category-id>"}]}`
+Respond with ONLY JSON in this exact shape: {"results": [{"id": "<transaction-id>", "category_id": "<category-id>"}]}
+
+The worked examples you'll see use ids like "ex-cat-…" and "ex-tx-…" purely to demonstrate the task —
+never write one of those ids into your actual answer. Always take id and category_id values from the
+real categories and transactions given to you in this request.`
 
   const userPrompt = JSON.stringify({
     categories: categories.map((c) => ({ id: c.id, name: c.name, kind: c.kind })),
@@ -114,6 +182,7 @@ Respond with ONLY JSON in this exact shape: {"results": [{"id": "<transaction-id
       temperature: 0,
       messages: [
         { role: 'system', content: systemPrompt },
+        ...FEW_SHOT_EXAMPLES,
         { role: 'user', content: userPrompt },
       ],
     }),

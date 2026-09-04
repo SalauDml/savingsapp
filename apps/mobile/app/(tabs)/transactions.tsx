@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { View, Text, SectionList, RefreshControl, StyleSheet, Modal, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '@/constants/theme';
@@ -10,8 +10,14 @@ type Transaction = {
   amount: number;
   currency: string;
   transaction_at: string;
+  category_id: string | null;
   category: { name: string } | null;
 };
+
+// The category filter is either: show everything (null), show only
+// transactions with no category yet ('uncategorised'), or a specific
+// category's id. It's its own type so a stray string can't sneak in.
+type CategoryFilter = string | 'uncategorised' | null;
 
 type Category = {
   id: string;
@@ -76,13 +82,17 @@ function MerchantIcon({ name }: { name: string }) {
 }
 
 export default function TransactionsScreen() {
-  const [sections, setSections] = useState<Section[]>([]);
+  // Raw fetch result, ungrouped and unfiltered — `sections` below is derived
+  // from this, so switching the category filter never needs a refetch.
+  const [rawTransactions, setRawTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   // The transaction currently open in the category picker sheet; null = closed.
   const [pickerTx, setPickerTx] = useState<Transaction | null>(null);
   const [savingCategory, setSavingCategory] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>(null);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
 
   async function fetchTransactions() {
     const { data: { session } } = await supabase.auth.getSession();
@@ -90,7 +100,7 @@ export default function TransactionsScreen() {
 
     const { data, error } = await supabase
       .from('transactions')
-      .select('id, merchant_name, amount, currency, transaction_at, category:categories(name)')
+      .select('id, merchant_name, amount, currency, transaction_at, category_id, category:categories(name)')
       .order('transaction_at', { ascending: false })
       .limit(200)
       .overrideTypes<Transaction[], { merge: false }>();
@@ -100,8 +110,27 @@ export default function TransactionsScreen() {
       return;
     }
 
-    setSections(groupByDate(data ?? []));
+    setRawTransactions(data ?? []);
   }
+
+  // Derived, not stored: recomputes only when the fetched rows or the
+  // chosen filter change, so picking a category in the sheet is instant —
+  // no Supabase round trip, it's just filtering an array already in memory.
+  const sections = useMemo(() => {
+    let filtered = rawTransactions;
+    if (categoryFilter === 'uncategorised') {
+      filtered = rawTransactions.filter((tx) => !tx.category_id);
+    } else if (categoryFilter !== null) {
+      filtered = rawTransactions.filter((tx) => tx.category_id === categoryFilter);
+    }
+    return groupByDate(filtered);
+  }, [rawTransactions, categoryFilter]);
+
+  const filterLabel = useMemo(() => {
+    if (categoryFilter === null) return 'filter';
+    if (categoryFilter === 'uncategorised') return 'uncategorised';
+    return categories.find((c) => c.id === categoryFilter)?.name ?? 'filter';
+  }, [categoryFilter, categories]);
 
   // Category list for the picker sheet — small, stable, global-or-mine (RLS
   // already scopes it), so one load on mount is enough.
@@ -186,7 +215,7 @@ export default function TransactionsScreen() {
     );
   }
 
-  if (sections.length === 0) {
+  if (rawTransactions.length === 0) {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
         <View style={styles.centered}>
@@ -205,7 +234,11 @@ export default function TransactionsScreen() {
           <Text style={styles.headerEyebrow}>spend</Text>
           <Text style={styles.headerTitle}>every receipt.</Text>
         </View>
-        <Text style={styles.filterLink}>filter</Text>
+        <Pressable onPress={() => setFilterModalVisible(true)} hitSlop={10}>
+          <Text style={[styles.filterLink, categoryFilter !== null && styles.filterLinkActive]}>
+            {filterLabel}
+          </Text>
+        </Pressable>
       </View>
 
       {/* Search bar */}
@@ -226,6 +259,11 @@ export default function TransactionsScreen() {
             onRefresh={onRefresh}
             tintColor={Colors.accent}
           />
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyFilterNote}>
+            <Text style={styles.muted}>no transactions in "{filterLabel}"</Text>
+          </View>
         }
         renderSectionHeader={({ section }) => (
           <View style={styles.sectionHeaderRow}>
@@ -284,6 +322,43 @@ export default function TransactionsScreen() {
           </Pressable>
         </Pressable>
       </Modal>
+
+      {/* Category filter sheet */}
+      <Modal
+        visible={filterModalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setFilterModalVisible(false)}>
+        <Pressable style={styles.sheetBackdrop} onPress={() => setFilterModalVisible(false)}>
+          <Pressable style={styles.sheet} onPress={() => {}}>
+            <Text style={styles.sheetTitle}>filter by category</Text>
+            <Text style={styles.sheetSubtitle}>showing {sections.reduce((n, s) => n + s.data.length, 0)} of {rawTransactions.length}</Text>
+            <ScrollView style={styles.sheetList} showsVerticalScrollIndicator={false}>
+              <Pressable
+                onPress={() => { setCategoryFilter(null); setFilterModalVisible(false); }}
+                style={({ pressed }) => [styles.sheetRow, pressed && styles.sheetRowPressed]}>
+                <Text style={styles.sheetRowText}>all transactions</Text>
+                {categoryFilter === null && <Text style={styles.sheetCheck}>✓</Text>}
+              </Pressable>
+              <Pressable
+                onPress={() => { setCategoryFilter('uncategorised'); setFilterModalVisible(false); }}
+                style={({ pressed }) => [styles.sheetRow, pressed && styles.sheetRowPressed]}>
+                <Text style={styles.sheetRowText}>not categorised yet</Text>
+                {categoryFilter === 'uncategorised' && <Text style={styles.sheetCheck}>✓</Text>}
+              </Pressable>
+              {categories.map((cat) => (
+                <Pressable
+                  key={cat.id}
+                  onPress={() => { setCategoryFilter(cat.id); setFilterModalVisible(false); }}
+                  style={({ pressed }) => [styles.sheetRow, pressed && styles.sheetRowPressed]}>
+                  <Text style={styles.sheetRowText}>{cat.name}</Text>
+                  {categoryFilter === cat.id && <Text style={styles.sheetCheck}>✓</Text>}
+                </Pressable>
+              ))}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -319,6 +394,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.accent,
     marginBottom: 4,
+  },
+  filterLinkActive: {
+    color: Colors.dark,
+    textDecorationLine: 'underline',
   },
   searchWrap: {
     paddingHorizontal: 20,
@@ -357,6 +436,10 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.sans,
     fontSize: 12,
     color: Colors.textMuted,
+  },
+  emptyFilterNote: {
+    alignItems: 'center',
+    paddingTop: 40,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
