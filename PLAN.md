@@ -207,6 +207,7 @@ Goal: Make the app genuinely production-ready and resume-worthy.
 ---
 
 ## Open Questions
+- Client/DB timezone mismatch on period boundaries → **Known limitation, not yet fixed.** `budget-period.ts`'s `periodStart()` computes week/month boundaries in the device's local (UK) time; Ask CAIT's generated SQL uses Postgres's `date_trunc()`, which runs in the DB session's timezone (UTC by default, no `AT TIME ZONE` conversion anywhere in the prompt). During BST, a transaction right at a period boundary can land in different periods depending on which one answers the question. Fix is either: set the DB session timezone to `Europe/London` (simplest, one config change, correct for a UK-only app), or make the client compute boundaries in UTC to match Postgres (avoids DB config but drifts from what a UK user experiences as "Monday morning" during BST). Revisit before Phase 8.
 - Encrypt bank tokens at rest? → **Yes, Phase 8. Use Supabase Vault or AES-256.**
 - TrueLayer vs Plaid vs Monzo direct? → **Resolved.** Monzo's first-party API for now — see Decisions Made. TrueLayer/Plaid remain the answer if this ever needs to support other users' banks, not just mine.
 - Self-host Supabase? → Not needed for v1.
