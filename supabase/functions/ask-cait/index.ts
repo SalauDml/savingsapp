@@ -9,38 +9,45 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const FEW_SHOT_EXAMPLES = [
   { role: 'user', content: 'How much did I spend on Groceries last month?' },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: 'Single category, one calendar month. Join to categories, filter by exact name, restrict transaction_at to last month, sum amount.',
-    sql: "SELECT SUM(t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.name = 'Groceries' AND t.transaction_at >= date_trunc('month', CURRENT_DATE) - interval '1 month' AND t.transaction_at < date_trunc('month', CURRENT_DATE)",
+    reasoning: 'Single category, one calendar month. Join to categories, filter by exact name, restrict transaction_at to last month. Spending rows store amount as negative (money out), so negate the sum to return a positive pence-spent figure.',
+    sql: "SELECT SUM(-t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.name = 'Groceries' AND t.transaction_at >= date_trunc('month', CURRENT_DATE) - interval '1 month' AND t.transaction_at < date_trunc('month', CURRENT_DATE)",
   }) },
 
   { role: 'user', content: 'How much did I spend this month?' },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: "No category named, so total across all spending categories. Default to kind = 'spending', restrict to the current calendar month.",
-    sql: "SELECT SUM(t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND t.transaction_at >= date_trunc('month', CURRENT_DATE)",
+    reasoning: "No category named, so total across all spending categories. Default to kind = 'spending', restrict to the current calendar month, negate the sum since spending rows are stored as negative amounts.",
+    sql: "SELECT SUM(-t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND t.transaction_at >= date_trunc('month', CURRENT_DATE)",
   }) },
 
   { role: 'user', content: 'What did I spend at Tesco?' },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: 'Merchant name, not category. Use ILIKE for a case-insensitive partial match since merchant strings vary. No date range given, so sum across all time.',
-    sql: "SELECT SUM(t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND t.merchant_name ILIKE '%tesco%'",
+    reasoning: 'Merchant name, not category. Use ILIKE for a case-insensitive partial match since merchant strings vary. No date range given, so sum across all time — negated, as with any spending total.',
+    sql: "SELECT SUM(-t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND t.merchant_name ILIKE '%tesco%'",
   }) },
 
   { role: 'user', content: 'How much did I spend on coffee last month?' },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: "'Coffee' isn't a category, but likely maps to coffee-shop merchants — match merchant_name against common ones instead of declining.",
-    sql: "SELECT SUM(t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND (t.merchant_name ILIKE '%coffee%' OR t.merchant_name ILIKE '%costa%' OR t.merchant_name ILIKE '%starbucks%' OR t.merchant_name ILIKE '%cafe%' OR t.merchant_name ILIKE '%pret%') AND t.transaction_at >= date_trunc('month', CURRENT_DATE) - interval '1 month' AND t.transaction_at < date_trunc('month', CURRENT_DATE)",
+    reasoning: "'Coffee' isn't a category, but likely maps to coffee-shop merchants — match merchant_name against common ones instead of declining. Negate the sum, as with any spending total.",
+    sql: "SELECT SUM(-t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND (t.merchant_name ILIKE '%coffee%' OR t.merchant_name ILIKE '%costa%' OR t.merchant_name ILIKE '%starbucks%' OR t.merchant_name ILIKE '%cafe%' OR t.merchant_name ILIKE '%pret%') AND t.transaction_at >= date_trunc('month', CURRENT_DATE) - interval '1 month' AND t.transaction_at < date_trunc('month', CURRENT_DATE)",
   }) },
 
   { role: 'user', content: 'Compare this week to last week.' },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: "Comparing two periods means grouping by week so both totals come back in one query. Default to kind = 'spending' since no category or income/transfer is mentioned.",
-    sql: "SELECT date_trunc('week', t.transaction_at) AS week_start, SUM(t.amount) AS total FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND t.transaction_at >= NOW() - INTERVAL '2 weeks' GROUP BY week_start ORDER BY week_start DESC",
+    reasoning: "Comparing two periods means grouping by week so both totals come back in one query. Default to kind = 'spending' since no category or income/transfer is mentioned; negate the sum so both totals are positive pence-spent figures, comparable at a glance.",
+    sql: "SELECT date_trunc('week', t.transaction_at) AS week_start, SUM(-t.amount) AS total FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND t.transaction_at >= NOW() - INTERVAL '2 weeks' GROUP BY week_start ORDER BY week_start DESC",
   }) },
 
+  // This is the case that was silently backwards before: ORDER BY total DESC
+  // on a raw (un-negated) sum ranks the SMALLEST spender first, because
+  // spending rows are stored as negative amounts — DESC on negative numbers
+  // sorts closest-to-zero first. Negating before the sum, not after, means
+  // "biggest expense" and every other ranking/comparison downstream (budget
+  // checks included) can just use plain DESC/> like the numbers were always
+  // positive, without Call 2 having to reason about sign at all.
   { role: 'user', content: "What's my biggest expense?" },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: 'Asks which category has the highest total spend, not a single number. Group by category, sum, order highest first.',
-    sql: "SELECT c.name, SUM(t.amount) AS total FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' GROUP BY c.name ORDER BY total DESC LIMIT 5",
+    reasoning: 'Asks which category has the highest total spend, not a single number. Group by category, negate and sum so each total is a positive pence-spent figure, then order highest first — ordering DESC on the raw sum would rank the smallest spender first, since spending rows are stored as negative amounts.',
+    sql: "SELECT c.name, SUM(-t.amount) AS total FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' GROUP BY c.name ORDER BY total DESC LIMIT 5",
   }) },
 
   // Category mode: budgets has no period column any more — the shared
@@ -48,8 +55,20 @@ const FEW_SHOT_EXAMPLES = [
   // prompt (see schemaPrompt below), not something to read per-row.
   { role: 'user', content: 'Am I over budget?' },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: "This user's active budget mode is category, so compare actual spend per category against each category's budgeted amount — join budgets to categories, then to transactions since the start of the injected period.",
-    sql: "SELECT c.name, b.amount AS budgeted, SUM(t.amount) AS spent FROM budgets b JOIN categories c ON b.category_id = c.id LEFT JOIN transactions t ON t.category_id = c.id AND t.transaction_at >= date_trunc('week', CURRENT_DATE) GROUP BY c.name, b.amount",
+    reasoning: "This user's active budget mode is category, so compare actual spend per category against each category's budgeted amount — join budgets to categories, then to transactions since the start of the injected period. Negate the summed spend so it's a positive pence figure directly comparable to budgets.amount, which is always stored positive.",
+    sql: "SELECT c.name, b.amount AS budgeted, SUM(-t.amount) AS spent FROM budgets b JOIN categories c ON b.category_id = c.id LEFT JOIN transactions t ON t.category_id = c.id AND t.transaction_at >= date_trunc('week', CURRENT_DATE) GROUP BY c.name, b.amount",
+  }) },
+
+  // Same category-mode routing as above, but the question never says
+  // "budget" — this is the paraphrase case that used to slip through and
+  // default to overall_budgets regardless of mode. "Can I afford it" only
+  // has one honest source of an answer given the tables available (there's
+  // no account-balance table), so it's still a budget question, just
+  // scoped to the one category the question implies rather than all of them.
+  { role: 'user', content: "I wanna go out to eat tonight, can I afford it?" },
+  { role: 'assistant', content: JSON.stringify({
+    reasoning: "Affordability language ('can I afford it') is a budget question even without the word 'budget' — 'eat out' maps to the Eating Out category. Mode is category, so check budgets joined to categories for that one category, plus transactions for actual spend — not overall_budgets, and not a claim in reasoning about whether a budget row exists before the query runs.",
+    sql: "SELECT c.name, b.amount AS budgeted, SUM(-t.amount) AS spent FROM budgets b JOIN categories c ON b.category_id = c.id LEFT JOIN transactions t ON t.category_id = c.id AND t.transaction_at >= date_trunc('week', CURRENT_DATE) WHERE c.name = 'Eating Out' GROUP BY c.name, b.amount",
   }) },
 
   // Overall mode: exactly one row in overall_budgets, so scalar subqueries
@@ -58,8 +77,8 @@ const FEW_SHOT_EXAMPLES = [
   // exist, silently wrecking the aggregate.
   { role: 'user', content: 'Am I over budget?' },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: "This user's active budget mode is overall, not category — there's one number in overall_budgets, not a per-category split. Use scalar subqueries for the budget and its period, and a separate period-scoped SUM for spend, so the single budget row is never joined against many transaction rows.",
-    sql: "SELECT (SELECT amount FROM overall_budgets) AS budgeted, (SELECT period FROM overall_budgets) AS period, (SELECT SUM(t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND t.transaction_at >= date_trunc('week', CURRENT_DATE)) AS spent",
+    reasoning: "This user's active budget mode is overall, not category — there's one number in overall_budgets, not a per-category split. Use scalar subqueries for the budget and its period, and a separate period-scoped, negated SUM for spend — directly comparable to overall_budgets.amount, and the single budget row is never joined against many transaction rows.",
+    sql: "SELECT (SELECT amount FROM overall_budgets) AS budgeted, (SELECT period FROM overall_budgets) AS period, (SELECT SUM(-t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND t.transaction_at >= date_trunc('week', CURRENT_DATE)) AS spent",
   }) },
 
   // Mode mismatch: the question is shaped like a per-category budget
@@ -70,8 +89,8 @@ const FEW_SHOT_EXAMPLES = [
   // real data instead of either guessing or refusing to help.
   { role: 'user', content: "How's my Groceries budget doing?" },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: "Active mode is overall, so there is no per-category Groceries budget — budgets only has rows when mode is category. Rather than declining, return the one overall budget plus this category's actual spend so the answer can explain there's no category-specific budget while still being useful.",
-    sql: "SELECT (SELECT amount FROM overall_budgets) AS overall_budgeted, (SELECT period FROM overall_budgets) AS period, (SELECT SUM(t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.name = 'Groceries' AND t.transaction_at >= date_trunc('week', CURRENT_DATE)) AS groceries_spend",
+    reasoning: "Active mode is overall, so there is no per-category Groceries budget — budgets only has rows when mode is category. Rather than declining, return the one overall budget plus this category's actual spend (negated, so it's a positive pence figure) so the answer can explain there's no category-specific budget while still being useful.",
+    sql: "SELECT (SELECT amount FROM overall_budgets) AS overall_budgeted, (SELECT period FROM overall_budgets) AS period, (SELECT SUM(-t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.name = 'Groceries' AND t.transaction_at >= date_trunc('week', CURRENT_DATE)) AS groceries_spend",
   }) },
 
   // A follow-up, shown as it actually arrives at inference time: prior turns
@@ -81,8 +100,8 @@ const FEW_SHOT_EXAMPLES = [
   { role: 'assistant', content: 'You spent £84.20 on Entertainment last month.' },
   { role: 'user', content: 'What about this week?' },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: 'Follow-up with no new category named — reuse Entertainment from the previous question, only the date range changes.',
-    sql: "SELECT SUM(t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.name = 'Entertainment' AND t.transaction_at >= date_trunc('week', CURRENT_DATE)",
+    reasoning: 'Follow-up with no new category named — reuse Entertainment from the previous question, only the date range changes. Negate the sum, as with any spending total.',
+    sql: "SELECT SUM(-t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.name = 'Entertainment' AND t.transaction_at >= date_trunc('week', CURRENT_DATE)",
   }) },
 
   // A meta-question about the previous answer's own scope, not new data —
@@ -104,6 +123,49 @@ const FEW_SHOT_EXAMPLES = [
   { role: 'assistant', content: JSON.stringify({
     reasoning: 'This needs a forecast — average spend so far, days remaining, budget remaining — not something a single query can reliably answer. Decline rather than guess.',
     sql: null,
+  }) },
+]
+
+// Call 2's worked examples — same idiom as FEW_SHOT_EXAMPLES above, for the
+// same reason: the failure mode these fix ("empty results → generic
+// 'no transactions' guess") is a pattern-match problem, and a described rule
+// competes with the model's own training-data pattern for what an empty
+// result usually means. A contrasting pair of worked examples outweighs it.
+//
+// The two cases below produce an identical `results: []` but have opposite
+// correct explanations — the only thing that tells them apart is
+// sqlReasoning, which is exactly the point: these examples exist to teach
+// "go read sqlReasoning", not to teach two more canned sentences.
+const FEW_SHOT_ANSWER_EXAMPLES = [
+  // Inner join to a parent table (budgets/categories) came back empty — that
+  // structurally means the parent row is missing, never that the child
+  // (transactions) is. Saying "no transactions" here would be wrong, not
+  // just vague — this user may well have transactions in that category.
+  { role: 'user', content: JSON.stringify({
+    question: 'Can I afford to eat out this week? Am I over budget?',
+    sqlReasoning: "This user's active budget mode is category, so compare actual spend in Eating Out against its budgeted amount — join budgets to categories, then to transactions since the start of the period.",
+    results: [],
+    budgetMode: 'category',
+    budgetPeriod: 'weekly',
+  }) },
+  { role: 'assistant', content: JSON.stringify({
+    reasoning: "sqlReasoning says this joined budgets to categories for Eating Out. That join only returns a row if a budgets row exists for that category, so an empty result means no budget is set for Eating Out — it says nothing about whether transactions exist in it. I should name that specific cause, not guess about transactions.",
+    answer: "You haven't set a budget for Eating Out yet, so I can't tell you if this would put you over — want to set one?",
+  }) },
+
+  // Merchant search directly against transactions, no parent table involved
+  // — here an empty result really does mean zero matching transactions,
+  // because there's nothing else in the query that could produce the gap.
+  { role: 'user', content: JSON.stringify({
+    question: 'What did I spend on Netflix last month?',
+    sqlReasoning: "Merchant name, not category — match merchant_name against 'netflix' with ILIKE, restricted to last calendar month.",
+    results: [],
+    budgetMode: 'overall',
+    budgetPeriod: 'weekly',
+  }) },
+  { role: 'assistant', content: JSON.stringify({
+    reasoning: "sqlReasoning shows this queried transactions directly by merchant name with no other table involved, so an empty result only has one explanation: no transaction matched 'netflix' last month.",
+    answer: "You don't have any transactions matching Netflix last month.",
   }) },
 ]
 
@@ -191,7 +253,18 @@ Deno.serve(async (req) => {
 
   transactions (id, category_id, amount, currency, merchant_name,
   transaction_at)
-    - amount is an integer in pence (e.g. 550 = £5.50).
+    - amount is an integer in pence. Its SIGN carries real meaning, not just
+  magnitude: money leaving the account (spending) is NEGATIVE, money arriving
+  (income) is POSITIVE — e.g. a £5.50 coffee is stored as -550, a £5.50
+  refund as 550. This is the real bank data as Monzo reports it, not a bug.
+    - Because of this, ALWAYS negate a spending SUM — write SUM(-t.amount),
+  never SUM(t.amount) — whenever you're totalling spending-kind transactions.
+  This matters for two reasons: budgets.amount and overall_budgets.amount are
+  always stored positive, so a negated spend total is what's directly
+  comparable to a budgeted one; and ORDER BY on a raw (un-negated) sum sorts
+  backwards for "biggest"/"most" — DESC on negative numbers ranks the
+  smallest spender first, not the biggest. Only skip the negation for
+  kind = 'income' totals, where the raw sum is already positive.
   categories (id, name, kind)
     - kind is one of: 'spending', 'income', 'transfer'. Join
   transactions.category_id = categories.id to filter or group by this.
@@ -215,10 +288,14 @@ ${categoryList}
 ${budgetMode === 'category'
     ? `  Their shared category-budget period is: ${budgetPeriod}. Every row in
   budgets uses this same period — do not look for a period column on it.
-  When a question is about budgets, query budgets joined to categories (and
-  to transactions for actual spend), not overall_budgets — overall_budgets
-  may still hold a number left over from before the user switched modes,
-  and it is not the number currently being tracked.`
+  Treat ANY question about budgets, affordability, or whether spending is
+  okay as a budget question — not only ones that literally say "budget".
+  "Can I afford this", "should I get takeaway", "is it fine to spend on X",
+  "am I overspending" all count. For these, query budgets joined to
+  categories (and to transactions for actual spend) for the category named
+  or implied, not overall_budgets — overall_budgets may still hold a number
+  left over from before the user switched modes, and it is not the number
+  currently being tracked.`
     : `  Since mode is overall, budgets may still hold rows left over from
   before the user switched modes — ignore it for budget questions unless
   the question explicitly asks about a specific category's budget, in which
@@ -247,7 +324,10 @@ ${budgetMode === 'category'
   data, use sql: null — that answer comes from conversation history, not a
   new query.
   - In reasoning, briefly note which tables, columns, filters and aggregation
-  the question needs — work this out before writing sql, not at the same time.`
+  the question needs — work this out before writing sql, not at the same time.
+  - Never state in reasoning whether a row, budget, or piece of data exists or
+  doesn't — that's not something you know yet. Reasoning describes what
+  you're about to check; the query result is what answers it.`
 
 const sqlRes = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -350,11 +430,14 @@ const sqlRes = await fetch('https://api.openai.com/v1/chat/completions', {
     // Call 2: turn the raw rows into a plain-English answer.
     const answerPrompt = `You are CAIT, a friendly budgeting assistant for a UK student's spending app.
 
-You'll be given the user's original question, the raw query results that answer it (as JSON), and —
-before that — the recent conversation leading up to it.
+You'll be given the user's original question, sqlReasoning (Call 1's own explanation of what its
+query was trying to compute), the raw query results that answer it (as JSON), and — before that —
+the recent conversation leading up to it.
 
-Write a short, plain-English answer using ONLY the data provided — never invent or assume a number
-that isn't in the results or already stated earlier in the conversation.
+Write a short, plain-English answer using ONLY the data in results — never invent or assume a number
+that isn't in results or already stated earlier in the conversation. sqlReasoning is not a data
+source and must never be used to produce a number — it exists only to explain why results look the
+way they do.
 
 EVERY numeric value in results is an integer in pence, never pounds — this applies no matter what
 the field is called (amount, spent, budgeted, total, overall_budgeted, groceries_spend, or anything
@@ -368,8 +451,14 @@ details (e.g. "in what time range?", "which category was that?", "what did you j
 those, answer directly from the conversation history rather than treating the current query results
 as if they answer it — the results in front of you may be unrelated or empty for a question like this.
 
-If the results are empty and the question isn't one of those history questions, say so honestly
-rather than guessing — e.g. "You don't have any transactions in that category yet."
+If results is empty or a value in it is null, and the question isn't one of those history questions,
+say so honestly rather than guessing — but say WHY, by reading sqlReasoning first. sqlReasoning tells
+you what the query was actually checking, which usually pins down a specific, correct cause: an inner
+join from a parent table (e.g. budgets to categories) coming back empty means no budget row exists
+for that category, not that transactions are missing; a plain sum or search directly against
+transactions coming back empty means there really are no matching transactions. Name the specific
+cause sqlReasoning supports. If sqlReasoning doesn't make the gap explicable, stay honestly vague
+rather than inventing a specific-sounding cause it doesn't actually support.
 
 You'll also be told the user's active budget mode ('overall' or 'category') and, in category mode,
 their shared period. If a question asks about a specific category's budget while the mode is
@@ -379,7 +468,11 @@ still answer usefully with whatever overall budget and category-spend figures ar
 e.g. "you don't have a Groceries-specific budget — you're tracking £165/week overall, and you've
 spent £42 on Groceries this week." Don't apologise or treat this as an error.
 
-Keep it conversational and brief — one or two sentences, not a report.`
+Keep the final answer conversational and brief — one or two sentences, not a report.
+
+In reasoning, briefly work out what the results (and, if they're empty or null, sqlReasoning) actually
+support before writing the answer — same order Call 1 uses reasoning-then-sql, so the answer benefits
+from that thinking rather than jumping straight to a guess.`
 
     const answerRes = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -389,19 +482,46 @@ Keep it conversational and brief — one or two sentences, not a report.`
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
+        // Structured Outputs here too, mirroring Call 1 — reasoning before
+        // answer so the model's own reasoning tokens are in context by the
+        // time it writes the answer, not just a field that happens to exist.
+        response_format: {
+          type: 'json_schema',
+          json_schema: {
+            name: 'answer_response',
+            strict: true,
+            schema: {
+              type: 'object',
+              properties: {
+                reasoning: { type: 'string' },
+                answer: { type: 'string' },
+              },
+              required: ['reasoning', 'answer'],
+              additionalProperties: false,
+            },
+          },
+        },
         temperature: 0,
         messages: [
           { role: 'system', content: answerPrompt },
+          ...FEW_SHOT_ANSWER_EXAMPLES,
           ...sanitisedHistory,
-          { role: 'user', content: JSON.stringify({ question, results: rows, budgetMode, budgetPeriod }) },
+          { role: 'user', content: JSON.stringify({ question, sqlReasoning: reasoning, results: rows, budgetMode, budgetPeriod }) },
         ],
       }),
     })
 
     const answerData = await answerRes.json()
-    const answer = answerData.choices[0].message.content
 
-    // PROBE 4 — the final plain-English answer actually sent back to the app.
+    // PROBE 4 — same shape as PROBE 2 for Call 1: finish_reason first (a
+    // "length" cutoff would break the JSON.parse right below), then the raw
+    // content so a malformed response is diagnosable from the log alone.
+    console.log(`[${reqId}] call 2 finish_reason=${answerData.choices?.[0]?.finish_reason} | raw=${answerData.choices?.[0]?.message?.content}`)
+
+    const { reasoning: answerReasoning, answer } = JSON.parse(answerData.choices[0].message.content)
+    console.log(`[${reqId}] call 2 reasoning="${answerReasoning}"`)
+
+    // PROBE 5 — the final plain-English answer actually sent back to the app.
     console.log(`[${reqId}] call 2 answer="${answer}"`)
 
     return new Response(JSON.stringify({ answer }), {
