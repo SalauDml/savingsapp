@@ -38,3 +38,10 @@ Thumbs.db
 # Tool-generated debug/session artifacts, not project source
 .playwright-mcp/
 .superpowers/brainstorm/*/state/
+
+# Design-tool export dump — contains a duplicate of the already-committed
+# design_handoff_cait/ bundle, plus many draft/iteration files and an
+# OS-generated .thumbnail cache. Reference material already mined into the
+# app (see apps/mobile/app/budget.tsx), not a deliverable meant to live in
+# the repo the way design_handoff_cait/ is.
+Cait (1)/

@@ -36,6 +36,7 @@ export default function SettingsScreen() {
       label: 'connected',
       items: [
         { text: 'add your bank →', onPress: () => router.push('/(auth)/connect-bank') },
+        { text: 'budget →', onPress: () => router.push('/budget') },
       ],
     },
     {

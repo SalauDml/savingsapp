@@ -3,6 +3,8 @@ import { View, Text, SectionList, RefreshControl, StyleSheet, Modal, Pressable, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
+import { periodStart, type BudgetPeriod } from '@/lib/budget-period';
+import { CategoryRow } from '@/components/category-row';
 
 type Transaction = {
   id: string;
@@ -11,7 +13,7 @@ type Transaction = {
   currency: string;
   transaction_at: string;
   category_id: string | null;
-  category: { name: string } | null;
+  category: { name: string; kind: string } | null;
 };
 
 // The category filter is either: show everything (null), show only
@@ -22,6 +24,23 @@ type CategoryFilter = string | 'uncategorised' | null;
 type Category = {
   id: string;
   name: string;
+};
+
+type BudgetHeaderCategory = { category_id: string; name: string; amount: number };
+
+// Categories have no emoji column — this is a display-only fallback map,
+// same idea as MerchantIcon falling back to a plain initial when there's no
+// real logo. Anything not listed here (a personal category the user added)
+// gets the generic 💰.
+const CATEGORY_EMOJI: Record<string, string> = {
+  Groceries: '🛒',
+  'Eating Out': '🍔',
+  Transport: '🚌',
+  'Bills & Subscriptions': '📺',
+  Entertainment: '🎬',
+  Shopping: '🛍️',
+  Health: '💊',
+  'Fees & Charges': '💸',
 };
 
 type Section = {
@@ -94,13 +113,21 @@ export default function TransactionsScreen() {
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>(null);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
 
+  // Budget summary header — null mode means "not loaded yet", not "no
+  // budget", so the header renders nothing rather than flashing an empty
+  // state before the real answer comes back.
+  const [budgetMode, setBudgetMode] = useState<'overall' | 'category' | null>(null);
+  const [budgetPeriod, setBudgetPeriod] = useState<BudgetPeriod>('weekly');
+  const [overallBudgetAmount, setOverallBudgetAmount] = useState<number | null>(null);
+  const [categoryBudgets, setCategoryBudgets] = useState<BudgetHeaderCategory[]>([]);
+
   async function fetchTransactions() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
     const { data, error } = await supabase
       .from('transactions')
-      .select('id, merchant_name, amount, currency, transaction_at, category_id, category:categories(name)')
+      .select('id, merchant_name, amount, currency, transaction_at, category_id, category:categories(name, kind)')
       .order('transaction_at', { ascending: false })
       .limit(200)
       .overrideTypes<Transaction[], { merge: false }>();
@@ -126,6 +153,41 @@ export default function TransactionsScreen() {
     return groupByDate(filtered);
   }, [rawTransactions, categoryFilter]);
 
+  // Reuses rawTransactions already in memory rather than a second network
+  // round trip — same "derive, don't refetch" reasoning as `sections` above.
+  const budgetHeaderRows = useMemo(() => {
+    if (budgetMode !== 'category' || categoryBudgets.length === 0) return [];
+    // Compared as Date values, not raw strings — Postgres's "+00:00" offset
+    // and toISOString()'s "Z" suffix don't sort identically as text even
+    // when they're the same instant, same reasoning groupByDate above
+    // already uses `new Date(...)` rather than string comparison.
+    const startTime = new Date(periodStart(budgetPeriod)).getTime();
+    return categoryBudgets.map((cb) => {
+      const spent = rawTransactions
+        .filter((tx) => tx.category_id === cb.category_id && new Date(tx.transaction_at).getTime() >= startTime)
+        .reduce((sum, tx) => sum + tx.amount, 0);
+      return {
+        ...cb,
+        spent: Math.abs(spent),
+        progress: cb.amount > 0 ? Math.abs(spent) / cb.amount : 0,
+      };
+    });
+  }, [budgetMode, categoryBudgets, budgetPeriod, rawTransactions]);
+
+  const overallHeaderSummary = useMemo(() => {
+    if (budgetMode !== 'overall' || overallBudgetAmount === null) return null;
+    const startTime = new Date(periodStart(budgetPeriod)).getTime();
+    const spent = rawTransactions
+      .filter((tx) => new Date(tx.transaction_at).getTime() >= startTime && tx.category?.kind === 'spending')
+      .reduce((sum, tx) => sum + tx.amount, 0);
+    const absSpent = Math.abs(spent);
+    return {
+      spent: absSpent,
+      budgeted: overallBudgetAmount,
+      progress: overallBudgetAmount > 0 ? absSpent / overallBudgetAmount : 0,
+    };
+  }, [budgetMode, overallBudgetAmount, budgetPeriod, rawTransactions]);
+
   const filterLabel = useMemo(() => {
     if (categoryFilter === null) return 'filter';
     if (categoryFilter === 'uncategorised') return 'uncategorised';
@@ -144,6 +206,50 @@ export default function TransactionsScreen() {
       setCategories(data ?? []);
     }
     loadCategories();
+  }, []);
+
+  // One load on mount, same as categories above — the budget itself only
+  // ever changes from the budget-setting screen, never from this one.
+  useEffect(() => {
+    async function loadBudgetHeader() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const uid = session.user.id;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('active_budget_mode, category_budget_period')
+        .eq('id', uid)
+        .single();
+
+      const mode = (profile?.active_budget_mode as 'overall' | 'category') ?? 'overall';
+      setBudgetMode(mode);
+
+      if (mode === 'overall') {
+        const { data: overall } = await supabase
+          .from('overall_budgets')
+          .select('amount, period')
+          .eq('user_id', uid)
+          .maybeSingle();
+        if (overall) {
+          setOverallBudgetAmount(overall.amount);
+          setBudgetPeriod(overall.period as BudgetPeriod);
+        }
+      } else {
+        setBudgetPeriod((profile?.category_budget_period as BudgetPeriod) ?? 'weekly');
+        const { data: rows } = await supabase
+          .from('budgets')
+          .select('category_id, amount, category:categories(name)')
+          .eq('user_id', uid)
+          .overrideTypes<{ category_id: string; amount: number; category: { name: string } | null }[], { merge: false }>();
+        setCategoryBudgets((rows ?? []).map((r) => ({
+          category_id: r.category_id,
+          name: r.category?.name ?? '?',
+          amount: r.amount,
+        })));
+      }
+    }
+    loadBudgetHeader();
   }, []);
 
   // Writes the user's choice straight to the row RLS already lets them touch
@@ -259,6 +365,40 @@ export default function TransactionsScreen() {
             onRefresh={onRefresh}
             tintColor={Colors.accent}
           />
+        }
+        ListHeaderComponent={
+          overallHeaderSummary ? (
+            <View style={styles.budgetHeader}>
+              <View style={styles.budgetHeaderTopRow}>
+                <Text style={styles.budgetHeaderLabel}>
+                  {budgetPeriod === 'monthly' ? 'monthly budget' : 'weekly budget'}
+                </Text>
+                <Text style={styles.budgetHeaderAmounts}>
+                  £{(overallHeaderSummary.spent / 100).toFixed(2)}
+                  <Text style={styles.budgetHeaderOf}> of £{Math.round(overallHeaderSummary.budgeted / 100)}</Text>
+                </Text>
+              </View>
+              <View style={styles.budgetHeaderTrack}>
+                <View style={[
+                  styles.budgetHeaderFill,
+                  { width: `${Math.min(100, overallHeaderSummary.progress * 100)}%` },
+                  overallHeaderSummary.progress > 1 && styles.budgetHeaderFillOver,
+                ]} />
+              </View>
+            </View>
+          ) : budgetHeaderRows.length > 0 ? (
+            <View style={styles.budgetHeader}>
+              {budgetHeaderRows.map((row) => (
+                <CategoryRow
+                  key={row.category_id}
+                  emoji={CATEGORY_EMOJI[row.name] ?? '💰'}
+                  name={row.name}
+                  amount={`£${(row.spent / 100).toFixed(2)} / £${Math.round(row.amount / 100)}`}
+                  progress={row.progress}
+                />
+              ))}
+            </View>
+          ) : null
         }
         ListEmptyComponent={
           <View style={styles.emptyFilterNote}>
@@ -420,6 +560,45 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 20,
     paddingBottom: 32,
+  },
+  budgetHeader: {
+    paddingBottom: 6,
+    gap: 8,
+  },
+  budgetHeaderTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: 8,
+  },
+  budgetHeaderLabel: {
+    fontFamily: Fonts.sansExtraBold,
+    fontSize: 10.5,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    color: Colors.textMuted,
+  },
+  budgetHeaderAmounts: {
+    fontFamily: Fonts.sansExtraBold,
+    fontSize: 14,
+    color: Colors.dark,
+  },
+  budgetHeaderOf: {
+    fontFamily: Fonts.sans,
+    color: Colors.textMuted,
+  },
+  budgetHeaderTrack: {
+    height: 7,
+    backgroundColor: Colors.rule,
+    borderRadius: 4,
+  },
+  budgetHeaderFill: {
+    height: '100%',
+    backgroundColor: Colors.accent,
+    borderRadius: 4,
+  },
+  budgetHeaderFillOver: {
+    backgroundColor: '#A05840',
   },
   centered: {
     flex: 1,

@@ -43,10 +43,35 @@ const FEW_SHOT_EXAMPLES = [
     sql: "SELECT c.name, SUM(t.amount) AS total FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' GROUP BY c.name ORDER BY total DESC LIMIT 5",
   }) },
 
+  // Category mode: budgets has no period column any more — the shared
+  // period for every category budget is a fact injected into the schema
+  // prompt (see schemaPrompt below), not something to read per-row.
   { role: 'user', content: 'Am I over budget?' },
   { role: 'assistant', content: JSON.stringify({
-    reasoning: "Needs actual spend so far this month per category compared against each category's budgeted amount — join budgets to categories, then to this month's transactions.",
-    sql: "SELECT c.name, b.amount AS budgeted, SUM(t.amount) AS spent FROM budgets b JOIN categories c ON b.category_id = c.id LEFT JOIN transactions t ON t.category_id = c.id AND t.transaction_at >= date_trunc('month', CURRENT_DATE) GROUP BY c.name, b.amount",
+    reasoning: "This user's active budget mode is category, so compare actual spend per category against each category's budgeted amount — join budgets to categories, then to transactions since the start of the injected period.",
+    sql: "SELECT c.name, b.amount AS budgeted, SUM(t.amount) AS spent FROM budgets b JOIN categories c ON b.category_id = c.id LEFT JOIN transactions t ON t.category_id = c.id AND t.transaction_at >= date_trunc('week', CURRENT_DATE) GROUP BY c.name, b.amount",
+  }) },
+
+  // Overall mode: exactly one row in overall_budgets, so scalar subqueries
+  // avoid any join-duplication risk — a JOIN against transactions here
+  // would multiply the single budget row by however many transactions
+  // exist, silently wrecking the aggregate.
+  { role: 'user', content: 'Am I over budget?' },
+  { role: 'assistant', content: JSON.stringify({
+    reasoning: "This user's active budget mode is overall, not category — there's one number in overall_budgets, not a per-category split. Use scalar subqueries for the budget and its period, and a separate period-scoped SUM for spend, so the single budget row is never joined against many transaction rows.",
+    sql: "SELECT (SELECT amount FROM overall_budgets) AS budgeted, (SELECT period FROM overall_budgets) AS period, (SELECT SUM(t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.kind = 'spending' AND t.transaction_at >= date_trunc('week', CURRENT_DATE)) AS spent",
+  }) },
+
+  // Mode mismatch: the question is shaped like a per-category budget
+  // question, but the user's active mode is overall, so there's no
+  // Groceries-specific budget to report. Answering honestly beats
+  // declining outright — return both the overall number and that
+  // category's actual spend, so Call 2 can explain the mismatch using
+  // real data instead of either guessing or refusing to help.
+  { role: 'user', content: "How's my Groceries budget doing?" },
+  { role: 'assistant', content: JSON.stringify({
+    reasoning: "Active mode is overall, so there is no per-category Groceries budget — budgets only has rows when mode is category. Rather than declining, return the one overall budget plus this category's actual spend so the answer can explain there's no category-specific budget while still being useful.",
+    sql: "SELECT (SELECT amount FROM overall_budgets) AS overall_budgeted, (SELECT period FROM overall_budgets) AS period, (SELECT SUM(t.amount) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE c.name = 'Groceries' AND t.transaction_at >= date_trunc('week', CURRENT_DATE)) AS groceries_spend",
   }) },
 
   // A follow-up, shown as it actually arrives at inference time: prior turns
@@ -142,6 +167,23 @@ Deno.serve(async (req) => {
 
     console.log(`[${reqId}] categories offered=${categories?.length ?? 0}`)
 
+    // The model can't see application state — it can only see what's
+    // queryable. Which budget table is "live" (overall vs category) is a
+    // fact about this user, not something derivable from the SQL schema
+    // alone, so it's resolved server-side (same authenticated client, same
+    // pattern as the category list above) and stated directly in the
+    // prompt rather than left for the model to infer from which table
+    // happens to have rows.
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('active_budget_mode, category_budget_period')
+      .eq('id', user.id)
+      .single()
+    const budgetMode = profile?.active_budget_mode ?? 'overall'
+    const budgetPeriod = profile?.category_budget_period ?? 'weekly'
+
+    console.log(`[${reqId}] active_budget_mode=${budgetMode} category_budget_period=${budgetPeriod}`)
+
     const schemaPrompt = `You write PostgreSQL SELECT queries for a UK
   budgeting app called SaveMyMoney.
 
@@ -161,8 +203,32 @@ Deno.serve(async (req) => {
     - The exact category names that currently exist — match c.name against
   one of these verbatim, never guess, split, or abbreviate one:
 ${categoryList}
-  budgets (id, category_id, amount, period)
-    - amount in pence, period is currently always 'monthly'.
+  budgets (id, category_id, amount)
+    - amount in pence. One row per category the user has budgeted. There is
+  no period column — every row shares one period, stated below as a fact,
+  not something to read from the table.
+  overall_budgets (id, amount, period)
+    - amount in pence. At most one row for this user — a single overall
+  spending limit, not split by category. period is 'weekly' or 'monthly'.
+
+  This user's active budget mode is: ${budgetMode}.
+${budgetMode === 'category'
+    ? `  Their shared category-budget period is: ${budgetPeriod}. Every row in
+  budgets uses this same period — do not look for a period column on it.
+  When a question is about budgets, query budgets joined to categories (and
+  to transactions for actual spend), not overall_budgets — overall_budgets
+  may still hold a number left over from before the user switched modes,
+  and it is not the number currently being tracked.`
+    : `  Since mode is overall, budgets may still hold rows left over from
+  before the user switched modes — ignore it for budget questions unless
+  the question explicitly asks about a specific category's budget, in which
+  case answer honestly using overall_budgets (the number actually being
+  tracked) plus that category's real spend, rather than declining just
+  because there's no per-category row for it.`
+}
+  - Resolve "this week"/"this month"/period-based budget questions using
+  date_trunc('week', CURRENT_DATE) for 'weekly' and date_trunc('month',
+  CURRENT_DATE) for 'monthly', matching whichever period applies above.
 
   Rules:
   - Write exactly one PostgreSQL SELECT statement. No other statement types,
@@ -288,8 +354,14 @@ You'll be given the user's original question, the raw query results that answer 
 before that — the recent conversation leading up to it.
 
 Write a short, plain-English answer using ONLY the data provided — never invent or assume a number
-that isn't in the results or already stated earlier in the conversation. Amounts are in pence;
-convert to £ (e.g. 550 → "£5.50").
+that isn't in the results or already stated earlier in the conversation.
+
+EVERY numeric value in results is an integer in pence, never pounds — this applies no matter what
+the field is called (amount, spent, budgeted, total, overall_budgeted, groceries_spend, or anything
+else a query happened to name it). Always divide by 100 before writing it as a £ figure: 550 →
+"£5.50", 15000 → "£150.00", 16621 → "£166.21". Never print a raw pence integer as if it were
+already pounds — a number in the thousands in these results is almost always still pence, not a
+suspiciously large pound amount.
 
 Some questions aren't asking for new data at all — they're asking about the PREVIOUS answer's own
 details (e.g. "in what time range?", "which category was that?", "what did you just say?"). For
@@ -298,6 +370,14 @@ as if they answer it — the results in front of you may be unrelated or empty f
 
 If the results are empty and the question isn't one of those history questions, say so honestly
 rather than guessing — e.g. "You don't have any transactions in that category yet."
+
+You'll also be told the user's active budget mode ('overall' or 'category') and, in category mode,
+their shared period. If a question asks about a specific category's budget while the mode is
+'overall', the results won't contain a per-category budget for it — that's expected, not missing
+data. Explain honestly that they track one overall number rather than per-category budgets, then
+still answer usefully with whatever overall budget and category-spend figures are in the results,
+e.g. "you don't have a Groceries-specific budget — you're tracking £165/week overall, and you've
+spent £42 on Groceries this week." Don't apologise or treat this as an error.
 
 Keep it conversational and brief — one or two sentences, not a report.`
 
@@ -313,7 +393,7 @@ Keep it conversational and brief — one or two sentences, not a report.`
         messages: [
           { role: 'system', content: answerPrompt },
           ...sanitisedHistory,
-          { role: 'user', content: JSON.stringify({ question, results: rows }) },
+          { role: 'user', content: JSON.stringify({ question, results: rows, budgetMode, budgetPeriod }) },
         ],
       }),
     })
