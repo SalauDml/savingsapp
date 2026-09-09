@@ -46,7 +46,11 @@ Deno.serve(async (req) => {
             })
     })
     const refreshed = await refreshRes.json()
-    console.log('refresh response:', refreshed)
+    // Never log the actual access_token/refresh_token - they're live
+    // credentials that grant full read access to a real bank account, and
+    // Supabase's function logs are a broader-access surface than the DB
+    // itself. Log enough to debug a failed refresh without the secret values.
+    console.log('refresh response ok:', refreshRes.ok, '| expires_in:', refreshed.expires_in, '| error:', refreshed.error)
 
     const {error: updateError} = await supabase
         .from('bank_connections')
@@ -70,7 +74,9 @@ Deno.serve(async (req) => {
         {headers: { Authorization: `Bearer ${accesstoken}`}}
     )
     const accountsData = await accountsRes.json()
-    console.log('monzo accounts response:', JSON.stringify(accountsData))
+    // Log account ids only, not the full objects - Monzo's account
+    // description field can include the holder's real name.
+    console.log('monzo accounts response ok:', accountsRes.ok, '| account ids:', (accountsData.accounts ?? []).map((a: any) => a.id))
     const accounts = accountsData.accounts
 
     // Step 4: fetch transactions for the primary account and upsert.

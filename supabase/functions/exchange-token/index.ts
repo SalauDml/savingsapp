@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   )
 
   const { code } = await req.json()
-  console.log('code received:', code)
+  console.log('code received, length:', code?.length ?? 0)
 
   // Must match connect-bank.tsx's REDIRECT_URI exactly (including the
   // trailing slash) - OAuth2 requires the token endpoint's redirect_uri to
@@ -32,7 +32,12 @@ Deno.serve(async (req) => {
   })
 
   const tokens = await tokenRes.json()
-  console.log('monzo token response:', JSON.stringify(tokens))
+  // Never log the actual access_token/refresh_token - they're live
+  // credentials that grant full read access to a real bank account, and
+  // Supabase's function logs are a broader-access surface than the DB
+  // itself (retention, export, anyone with dashboard access). Log enough to
+  // debug a failed exchange without ever writing the secret values out.
+  console.log('monzo token response ok:', tokenRes.ok, '| token_type:', tokens.token_type, '| expires_in:', tokens.expires_in, '| error:', tokens.error)
 
   if (!tokenRes.ok) {
     return new Response(JSON.stringify({ error: tokens }), { status: 400 })

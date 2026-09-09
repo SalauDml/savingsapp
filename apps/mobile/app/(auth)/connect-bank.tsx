@@ -6,8 +6,10 @@ import {
   Linking,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Colors, Fonts } from '@/constants/theme'
 import { supabase } from '@/lib/supabase'
+import { OAUTH_STATE_KEY, generateOAuthState } from '@/lib/monzoOAuthState'
 import { router } from 'expo-router'
 
 const clientId = process.env.EXPO_PUBLIC_MONZO_CLIENT_ID
@@ -34,18 +36,29 @@ async function handleConnect() {
   if (!session) return
   // No scope param here (unlike TrueLayer) - Monzo's developer API doesn't
   // use OAuth scopes to gate what you can read, access is all-or-nothing
-  // per account. `state` is Monzo's recommended CSRF guard; callback.tsx
-  // doesn't verify it back yet, so treat this as a placeholder for that,
-  // not real protection yet.
+  // per account.
   //
   // redirect_uri is deliberately NOT encodeURIComponent()'d here, unlike an
   // earlier version of this line. The browser navigation to it worked fine
   // either way, but that's not proof the value Monzo internally associated
   // with the issued code was identical to what got sent back at token-
   // exchange time - and this app's original, working cait:// redirect_uri
-  // was always sent as a plain, unencoded string. Testing whether matching
-  // that removes the redirect_uri_mismatch error - not confirmed yet.
-  const url = `https://auth.monzo.com/?client_id=${clientId}&redirect_uri=${REDIRECT_URI}&response_type=code&state=${session.user.id}`
+  // was always sent as a plain, unencoded string. Matching that is what
+  // actually fixed a redirect_uri_mismatch error at token exchange.
+  //
+  // state is a real per-flow nonce now, not session.user.id (that was never
+  // real CSRF protection - it's not a secret, and nothing verified it came
+  // back unchanged). cait://auth/callback is a custom URL scheme, which can
+  // be opened by any app or webpage on the device, not just Monzo's
+  // redirect - without checking state back, someone could craft
+  // cait://auth/callback?code=<their own Monzo auth code> and get this
+  // app to silently bind their bank account's tokens to your profile.
+  // callback.tsx verifies this value round-trips unchanged before
+  // exchanging anything.
+  const state = generateOAuthState()
+  await AsyncStorage.setItem(OAUTH_STATE_KEY, state)
+
+  const url = `https://auth.monzo.com/?client_id=${clientId}&redirect_uri=${REDIRECT_URI}&response_type=code&state=${state}`
   await Linking.openURL(url)
 }
 

@@ -1,20 +1,39 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Fonts } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
+import { OAUTH_STATE_KEY } from '@/lib/monzoOAuthState';
 
 export default function CallbackScreen() {
-  const { code } = useLocalSearchParams<{ code: string }>();
+  const { code, state } = useLocalSearchParams<{ code: string; state?: string }>();
   const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!code) return;
-    console.log(code);
 
     async function exchange() {
+      // Verify this callback actually belongs to a flow THIS device
+      // started, before doing anything else with `code`. cait://
+      // auth/callback is a custom URL scheme - any app or webpage on the
+      // device can open it, not just Monzo's own redirect - so without
+      // this check, someone could craft their own
+      // cait://auth/callback?code=...&state=... and get this screen to
+      // silently exchange and bind THEIR bank tokens to your profile.
+      // Read-then-clear regardless of outcome: the stored value is only
+      // ever meant to be checked once, whether it matches or not.
+      const expectedState = await AsyncStorage.getItem(OAUTH_STATE_KEY);
+      await AsyncStorage.removeItem(OAUTH_STATE_KEY);
+
+      if (!expectedState || state !== expectedState) {
+        console.log('oauth state mismatch - rejecting callback (hadExpected:', !!expectedState, ')');
+        setError(true);
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { setError(true); return; }
 
@@ -45,7 +64,7 @@ export default function CallbackScreen() {
     }
 
     exchange();
-  }, [code]);
+  }, [code, state]);
 
   if (error) {
     return (

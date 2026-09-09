@@ -189,7 +189,10 @@ real categories and transactions given to you in this request.`
   })
 
   const openaiData = await openaiRes.json()
-  console.log('openai response:', JSON.stringify(openaiData))
+  // Not the full response - it echoes back real merchant names/amounts from
+  // the prompt, which don't need to sit in function logs verbatim. Same
+  // idiom as categorise-backlog's equivalent log line.
+  console.log('openai response ok:', openaiRes.ok, '| finish_reason:', openaiData.choices?.[0]?.finish_reason, '| completion_tokens:', openaiData.usage?.completion_tokens)
 
   let rawResults: { id: string; category_id: string }[] = []
   try {
