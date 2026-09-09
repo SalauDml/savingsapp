@@ -1,9 +1,10 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { View, Text, SectionList, RefreshControl, StyleSheet, Modal, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
 import { periodStart, type BudgetPeriod } from '@/lib/budget-period';
+import { negatedSpend } from '@/lib/budget-summary';
 import { CategoryRow } from '@/components/category-row';
 
 type Transaction = {
@@ -119,7 +120,12 @@ export default function TransactionsScreen() {
   const [budgetMode, setBudgetMode] = useState<'overall' | 'category' | null>(null);
   const [budgetPeriod, setBudgetPeriod] = useState<BudgetPeriod>('weekly');
   const [overallBudgetAmount, setOverallBudgetAmount] = useState<number | null>(null);
+  // Budget *config* only (which categories, how much each) — the spend
+  // figures against them live in separate state below, populated from their
+  // own uncapped query rather than derived from this screen's visible list.
   const [categoryBudgets, setCategoryBudgets] = useState<BudgetHeaderCategory[]>([]);
+  const [budgetHeaderRows, setBudgetHeaderRows] = useState<(BudgetHeaderCategory & { spent: number; progress: number })[]>([]);
+  const [overallHeaderSummary, setOverallHeaderSummary] = useState<{ spent: number; budgeted: number; progress: number } | null>(null);
 
   async function fetchTransactions() {
     const { data: { session } } = await supabase.auth.getSession();
@@ -153,40 +159,50 @@ export default function TransactionsScreen() {
     return groupByDate(filtered);
   }, [rawTransactions, categoryFilter]);
 
-  // Reuses rawTransactions already in memory rather than a second network
-  // round trip — same "derive, don't refetch" reasoning as `sections` above.
-  const budgetHeaderRows = useMemo(() => {
-    if (budgetMode !== 'category' || categoryBudgets.length === 0) return [];
-    // Compared as Date values, not raw strings — Postgres's "+00:00" offset
-    // and toISOString()'s "Z" suffix don't sort identically as text even
-    // when they're the same instant, same reasoning groupByDate above
-    // already uses `new Date(...)` rather than string comparison.
-    const startTime = new Date(periodStart(budgetPeriod)).getTime();
-    return categoryBudgets.map((cb) => {
-      const spent = rawTransactions
-        .filter((tx) => tx.category_id === cb.category_id && new Date(tx.transaction_at).getTime() >= startTime)
-        .reduce((sum, tx) => sum + tx.amount, 0);
-      return {
-        ...cb,
-        spent: Math.abs(spent),
-        progress: cb.amount > 0 ? Math.abs(spent) / cb.amount : 0,
-      };
-    });
-  }, [budgetMode, categoryBudgets, budgetPeriod, rawTransactions]);
+  // Deliberately its own query, not derived from rawTransactions: that list
+  // is capped at 200 rows for the visible feed (see fetchTransactions), so
+  // deriving the period total from it silently understated spend for any
+  // user with more than 200 transactions since the period started. This
+  // queries the real period window directly, uncapped, same as index.tsx's
+  // loadBudgetSummary.
+  async function loadBudgetHeaderSpend(
+    uid: string,
+    mode: 'overall' | 'category',
+    period: BudgetPeriod,
+    overallAmount: number | null,
+    catBudgets: BudgetHeaderCategory[]
+  ) {
+    const start = periodStart(period);
 
-  const overallHeaderSummary = useMemo(() => {
-    if (budgetMode !== 'overall' || overallBudgetAmount === null) return null;
-    const startTime = new Date(periodStart(budgetPeriod)).getTime();
-    const spent = rawTransactions
-      .filter((tx) => new Date(tx.transaction_at).getTime() >= startTime && tx.category?.kind === 'spending')
-      .reduce((sum, tx) => sum + tx.amount, 0);
-    const absSpent = Math.abs(spent);
-    return {
-      spent: absSpent,
-      budgeted: overallBudgetAmount,
-      progress: overallBudgetAmount > 0 ? absSpent / overallBudgetAmount : 0,
-    };
-  }, [budgetMode, overallBudgetAmount, budgetPeriod, rawTransactions]);
+    if (mode === 'overall') {
+      if (overallAmount === null) { setOverallHeaderSummary(null); return; }
+      const { data: rows } = await supabase
+        .from('transactions')
+        .select('amount, category:categories(kind)')
+        .gte('transaction_at', start)
+        .overrideTypes<{ amount: number; category: { kind: string } | null }[], { merge: false }>();
+      const spent = negatedSpend((rows ?? []).filter((r) => r.category?.kind === 'spending'));
+      setOverallHeaderSummary({
+        spent,
+        budgeted: overallAmount,
+        progress: overallAmount > 0 ? spent / overallAmount : 0,
+      });
+      return;
+    }
+
+    if (catBudgets.length === 0) { setBudgetHeaderRows([]); return; }
+    const categoryIds = catBudgets.map((c) => c.category_id);
+    const { data: rows } = await supabase
+      .from('transactions')
+      .select('amount, category_id')
+      .in('category_id', categoryIds)
+      .gte('transaction_at', start);
+
+    setBudgetHeaderRows(catBudgets.map((cb) => {
+      const spent = negatedSpend((rows ?? []).filter((r) => r.category_id === cb.category_id));
+      return { ...cb, spent, progress: cb.amount > 0 ? spent / cb.amount : 0 };
+    }));
+  }
 
   const filterLabel = useMemo(() => {
     if (categoryFilter === null) return 'filter';
@@ -208,8 +224,19 @@ export default function TransactionsScreen() {
     loadCategories();
   }, []);
 
-  // One load on mount, same as categories above — the budget itself only
-  // ever changes from the budget-setting screen, never from this one.
+  // Config (mode/period/amounts) still loads once on mount — the budget
+  // itself only ever changes from the budget-setting screen. The spend
+  // *against* it (budgetConfigRef + loadBudgetHeaderSpend) is re-run
+  // whenever the transaction list refreshes, below, since new transactions
+  // change that even though the budget config hasn't.
+  const budgetConfigRef = useRef<{
+    uid: string;
+    mode: 'overall' | 'category';
+    period: BudgetPeriod;
+    overallAmount: number | null;
+    categoryBudgets: BudgetHeaderCategory[];
+  } | null>(null);
+
   useEffect(() => {
     async function loadBudgetHeader() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -225,6 +252,10 @@ export default function TransactionsScreen() {
       const mode = (profile?.active_budget_mode as 'overall' | 'category') ?? 'overall';
       setBudgetMode(mode);
 
+      let overallAmount: number | null = null;
+      let period: BudgetPeriod = 'weekly';
+      let catBudgets: BudgetHeaderCategory[] = [];
+
       if (mode === 'overall') {
         const { data: overall } = await supabase
           .from('overall_budgets')
@@ -232,25 +263,42 @@ export default function TransactionsScreen() {
           .eq('user_id', uid)
           .maybeSingle();
         if (overall) {
-          setOverallBudgetAmount(overall.amount);
-          setBudgetPeriod(overall.period as BudgetPeriod);
+          overallAmount = overall.amount;
+          period = overall.period as BudgetPeriod;
+          setOverallBudgetAmount(overallAmount);
+          setBudgetPeriod(period);
         }
       } else {
-        setBudgetPeriod((profile?.category_budget_period as BudgetPeriod) ?? 'weekly');
+        period = (profile?.category_budget_period as BudgetPeriod) ?? 'weekly';
+        setBudgetPeriod(period);
         const { data: rows } = await supabase
           .from('budgets')
           .select('category_id, amount, category:categories(name)')
           .eq('user_id', uid)
           .overrideTypes<{ category_id: string; amount: number; category: { name: string } | null }[], { merge: false }>();
-        setCategoryBudgets((rows ?? []).map((r) => ({
+        catBudgets = (rows ?? []).map((r) => ({
           category_id: r.category_id,
           name: r.category?.name ?? '?',
           amount: r.amount,
-        })));
+        }));
+        setCategoryBudgets(catBudgets);
       }
+
+      budgetConfigRef.current = { uid, mode, period, overallAmount, categoryBudgets: catBudgets };
+      loadBudgetHeaderSpend(uid, mode, period, overallAmount, catBudgets);
     }
     loadBudgetHeader();
   }, []);
+
+  // Re-runs the spend query against whatever config loadBudgetHeader last
+  // stored — called every time the transaction list refreshes (mount,
+  // pull-to-refresh, realtime insert/update) so the header total doesn't go
+  // stale relative to newly-synced transactions.
+  async function refreshBudgetHeaderSpend() {
+    const cfg = budgetConfigRef.current;
+    if (!cfg) return;
+    await loadBudgetHeaderSpend(cfg.uid, cfg.mode, cfg.period, cfg.overallAmount, cfg.categoryBudgets);
+  }
 
   // Writes the user's choice straight to the row RLS already lets them touch
   // (bank_connection_id -> their own user_id). categorisation_attempts jumps
@@ -288,6 +336,7 @@ export default function TransactionsScreen() {
         {event: 'INSERT', schema: 'public', table: 'transactions'},
         (payload) => {
           fetchTransactions();
+          refreshBudgetHeaderSpend();
         }
       )
       .on(
@@ -295,6 +344,7 @@ export default function TransactionsScreen() {
         {event: 'UPDATE', schema: 'public', table: 'transactions'},
         (payload) => {
           fetchTransactions();
+          refreshBudgetHeaderSpend();
         }
       )
       .subscribe();
@@ -307,7 +357,7 @@ export default function TransactionsScreen() {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchTransactions();
+    await Promise.all([fetchTransactions(), refreshBudgetHeaderSpend()]);
     setRefreshing(false);
   }, []);
 

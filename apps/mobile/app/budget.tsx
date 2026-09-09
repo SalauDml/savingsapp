@@ -39,6 +39,7 @@ function poundsToPence(pounds: string): number {
 
 export default function BudgetScreen() {
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -60,7 +61,12 @@ export default function BudgetScreen() {
       const uid = session.user.id;
       setUserId(uid);
 
-      const [{ data: profile }, { data: overall }, { data: budgetRows }, { data: cats }] = await Promise.all([
+      const [
+        { data: profile, error: profileError },
+        { data: overall, error: overallError },
+        { data: budgetRows, error: budgetRowsError },
+        { data: cats, error: catsError },
+      ] = await Promise.all([
         supabase.from('profiles').select('active_budget_mode, category_budget_period').eq('id', uid).single(),
         supabase.from('overall_budgets').select('amount, period').eq('user_id', uid).maybeSingle(),
         supabase.from('budgets').select('category_id, amount, category:categories(name)').eq('user_id', uid)
@@ -70,6 +76,21 @@ export default function BudgetScreen() {
         // Ask CAIT's schema prompt already defaults away from it.
         supabase.from('categories').select('id, name').eq('kind', 'spending').neq('name', 'Uncategorised').order('name'),
       ]);
+
+      // profile carries active_budget_mode, which `mode` below defaults to
+      // 'overall' when this read fails — without stopping here, handleSave
+      // would go on to unconditionally write that default back to profiles,
+      // silently flipping the user's real stored mode on a transient
+      // read failure they never saw.
+      if (profileError) {
+        console.log('profile load failed:', profileError.message);
+        setLoadError(true);
+        setLoading(false);
+        return;
+      }
+      if (overallError) console.log('overall budget load failed:', overallError.message);
+      if (budgetRowsError) console.log('category budgets load failed:', budgetRowsError.message);
+      if (catsError) console.log('categories load failed:', catsError.message);
 
       if (profile) {
         setMode(profile.active_budget_mode as BudgetMode);
@@ -187,6 +208,16 @@ export default function BudgetScreen() {
       <SafeAreaView style={styles.safe} edges={['top']}>
         <View style={styles.centered}>
           <Text style={styles.muted}>loading…</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <View style={styles.centered}>
+          <Text style={styles.muted}>couldn't load your budget — check your connection and try again.</Text>
         </View>
       </SafeAreaView>
     );

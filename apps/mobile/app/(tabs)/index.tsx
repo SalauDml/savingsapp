@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
 import { periodStart } from '@/lib/budget-period';
+import { negatedSpend } from '@/lib/budget-summary';
 import { router, useFocusEffect } from 'expo-router';
 
 const QUESTIONS = [
@@ -53,11 +54,9 @@ async function loadBudgetSummary(userId: string): Promise<BudgetSummary | null> 
       .gte('transaction_at', periodStart(overall.period as 'weekly' | 'monthly'))
       .overrideTypes<{ amount: number; category: { kind: string } | null }[], { merge: false }>();
 
-    const spent = (rows ?? [])
-      .filter((t) => t.category?.kind === 'spending')
-      .reduce((sum, t) => sum + t.amount, 0);
+    const spendingRows = (rows ?? []).filter((t) => t.category?.kind === 'spending');
 
-    return { budgeted: overall.amount, spent: Math.abs(spent), period: overall.period as 'weekly' | 'monthly' };
+    return { budgeted: overall.amount, spent: negatedSpend(spendingRows), period: overall.period as 'weekly' | 'monthly' };
   }
 
   const period = (profile?.category_budget_period as 'weekly' | 'monthly') ?? 'weekly';
@@ -72,11 +71,9 @@ async function loadBudgetSummary(userId: string): Promise<BudgetSummary | null> 
     .select('amount, category_id')
     .gte('transaction_at', periodStart(period));
 
-  const spent = (txRows ?? [])
-    .filter((t) => t.category_id && categoryIds.has(t.category_id))
-    .reduce((sum, t) => sum + t.amount, 0);
+  const matchingRows = (txRows ?? []).filter((t) => t.category_id && categoryIds.has(t.category_id));
 
-  return { budgeted, spent: Math.abs(spent), period };
+  return { budgeted, spent: negatedSpend(matchingRows), period };
 }
 
 export default function HomeScreen() {
@@ -141,9 +138,22 @@ export default function HomeScreen() {
           supabase.functions.invoke('fetch-transactions', {
             headers: { Authorization: `Bearer ${session.access_token}` },
           }).then(() => {
-            supabase.functions.invoke('categorise-transactions', {
+            return supabase.functions.invoke('categorise-transactions', {
               headers: { Authorization: `Bearer ${session.access_token}` },
             }).catch(() => {});
+          }).then(() => {
+            // Re-run the summary now that freshly-synced transactions have
+            // gone through categorisation — the loadBudgetSummary() call
+            // above this block fires before fetch-transactions has written
+            // anything, so on a brand-new bank connection it always reads
+            // "£0 spent" and (until this) never refreshed once real data
+            // existed, only self-correcting on the next screen focus.
+            if (!active) return;
+            loadBudgetSummary(session.user.id).then((summary) => {
+              if (!active) return;
+              setBudgetSummary(summary);
+              setBudgetChecked(true);
+            });
           }).catch(() => {});
         }
       }
