@@ -112,7 +112,7 @@ Goal: Transactions are automatically categorised by an LLM.
 - ✅ Manual recategorisation UI — tap any row in `transactions.tsx` to open a category picker sheet (all global + own categories, current one checked). Selecting one writes `category_id` directly via Supabase (RLS already permits it — no Edge Function needed) and jumps `categorisation_attempts` to the cap so the automatic retry sweep can never silently overwrite a human's explicit choice.
 - ⬜ Replace mock `CategoryRow` data on Home screen with real grouped totals: `SELECT category_id, SUM(amount_pence) FROM transactions WHERE user_id = $1 AND date >= date_trunc('month', now()) GROUP BY category_id`
 
-**Deferred to Phase 7:**
+**Deferred to Phase 8:**
 - `net.http_post` timeout risk — default timeout (5000ms) is too tight for batches with several distinct users, since the function makes one sequential OpenAI call per user before responding. Confirmed happening once already (`net._http_response` row with `timed_out: true` after ~5s, DNS/handshake only ~56ms). The Edge Function's own work likely still completes even when this happens — the timeout only means `pg_net` stops waiting for the response, not that the function is killed — but it means bigger runs are currently unverifiable via `pg_net`. Fix: raise `timeout_milliseconds` on the `net.http_post` call in a new migration (suggested: 30000ms).
 - No real auth on `categorise-backlog` — the function currently accepts any caller with a valid-shaped Supabase key in the `Authorization` header, including the publishable key — which is public by design (shipped in the mobile app bundle). `verify_jwt: true` doesn't meaningfully restrict this since the gateway accepts the publishable key as valid. Fix: add a shared-secret check inside the function itself (e.g. compare a custom `x-cron-secret` header against an Edge Function secret only the cron job knows), independent of the `verify_jwt` toggle.
 - Prompt duplication — `categorise-transactions` and `categorise-backlog` now carry near-identical system prompts in two separate files. If the prompt needs tuning again it has to change in both places, and it already drifted apart once. Fix: extract to a shared module (e.g. `supabase/functions/_shared/categorise-prompt.ts`) both functions import.
@@ -150,7 +150,26 @@ Goal: Users can ask questions about their transactions in plain English and get 
 
 ---
 
-## Phase 7 — Production Polish ⬜ Not Started
+## Phase 7 — Budgets ✅ Complete
+Goal: Users can set a budget — either one overall number, or split by category — and Ask CAIT can answer budget questions correctly under either mode.
+
+**Why now:** Ask CAIT already had a working "Am I over budget?" few-shot since Phase 6, joining a `budgets` table that had existed since Phase 1 with zero rows ever written to it — there was no UI anywhere to actually set one. This phase closes that gap.
+
+- ✅ Design source: a previously-undocumented budget-setting screen found in the `Cait (1)` design-tool export (`cait-bk-screens.jsx`) — a `BudgetModeToggle` ("one number" vs "by category") plus per-mode bodies, not present in the original `design_handoff_cait/README.md`.
+- ✅ Schema decision: overall and per-category budgets kept as **two separate tables** (`overall_budgets`, `budgets`) rather than a nullable `category_id` on one — deliberate choice to keep the two concerns apart. Which mode is active, and category mode's one shared period, both live on `profiles` (`active_budget_mode`, `category_budget_period`) rather than per-row on `budgets`, so nothing can leave two category-budget rows disagreeing about their period. Switching modes is a flag flip only — neither table is ever cleared, so old data survives a round trip back.
+- ✅ Migration `20260905000000_budget_modes.sql`: `overall_budgets` table (RLS, `cait_reader` grant, `unique(user_id)`), `profiles.active_budget_mode`/`category_budget_period` columns, fixed a pre-existing gap where `budgets` had **no uniqueness constraint at all** (a duplicate insert would've silently double-counted in any `SUM`) — `unique(user_id, category_id)` added, and the never-enforced free-text `period` column dropped from `budgets` in favour of the single `profiles` column.
+- ✅ `ask-cait` updated: the model can't see application state, so the active mode/period is resolved server-side and stated as a fact in the schema prompt, not left for the model to infer from which table has rows. Added few-shots for overall mode (scalar subqueries against the one-row table, not a join, to avoid multiplying it against every transaction) and the **mode-mismatch case** (asking about a category budget while in overall mode) — answered honestly with both real numbers instead of declining.
+- ✅ **Found and fixed a pence-vs-pounds formatting bug during manual verification** — Call 2 printed raw pence integers as if they were pounds (`£16,621` instead of `£166.21`) for the new `budgeted`/`spent` field names, even though the "amounts are in pence" rule already existed in the prompt. Root cause: the rule was demonstrated with only a bare-number example and no statement that it applies regardless of field name, so it didn't generalise to key names this feature introduced. Fixed by rewriting the rule to be explicit that it applies no matter what the field is called, with worked examples using the actual field names.
+- ✅ **Caught a test-data mistake before it became a real bug report** — first verification pass seeded a test budget under a stale `testuser@gmail.com` profile row (grabbed via a blind `SELECT id FROM profiles LIMIT 1`) instead of the real logged-in account, making `overall_budgets`/`budgets` correctly resolve to `null` for the account actually being tested. Diagnosed by comparing `auth.users` emails against the profile id used, not by guessing.
+- ✅ Mobile: `app/budget.tsx` (mode toggle, period chip, giant overall-amount entry via a plain `TextInput`'s own native caret rather than a custom keypad, per-category steppers in £5 increments, "+ new category" reusing the exact bottom-sheet pattern from `transactions.tsx`), wired into Settings (`budget →` row), Home (empty-state CTA card + real balance card replacing the old hardcoded `£47.20`/`£165`), and Transactions (a budget summary header — the first real use of the previously-built-but-unwired `CategoryRow` component).
+- ✅ Shared `lib/budget-period.ts` (`periodStart()`) so Home, Transactions, and Ask CAIT's generated SQL can never disagree about where a week/month boundary falls — extracted up front rather than copy-pasted, after this project already got burned once by a prompt duplicating and drifting apart (Phase 5's `categorise-transactions`/`categorise-backlog` split).
+- ✅ Verified end-to-end against the real account for all three cases (overall mode, category mode, mode-mismatch) via Ask CAIT's probe logs and direct SQL, both before and after the pence-formatting fix.
+
+**Concepts covered:** modelling an either/or relationship as two tables plus one resolved flag rather than a nullable foreign key; why a per-row "shared" value (period) is safer centralised on the owning entity than duplicated with no constraint keeping copies equal; injecting resolved application state into an LLM prompt as a stated fact when the model has no other way to see it; a prompt rule that's technically present but under-specified (no field-name generalisation) failing silently rather than erroring; diagnosing "wrong data" by checking *whose* data it actually is before assuming the query logic is broken.
+
+---
+
+## Phase 8 — Production Polish ⬜ Not Started
 Goal: Make the app genuinely production-ready and resume-worthy.
 
 - ⬜ Encrypt stored TrueLayer tokens in `bank_connections` using Supabase Vault or AES-256 with key in Edge Function env vars
@@ -181,11 +200,14 @@ Goal: Make the app genuinely production-ready and resume-worthy.
 | Categorisation retry model | Retry-with-attempt-cap (2 tries), not unlimited retries | Lets rows self-correct as the prompt improves, without burning OpenAI calls forever on merchants that are genuinely, permanently ambiguous |
 | Category correction UX | Tap a transaction row → picker sheet (not long-press, not a dedicated screen) | Matches established budgeting-app patterns (Monzo); one tap to open, one to choose, no hidden gesture to discover |
 | "General Expenses" catch-all category | Rejected in favour of targeted prompt examples | Investigated real fallback data first — nearly every case fit an existing category and just needed an explicit merchant example, not a new bucket. A vague catch-all risked becoming a second Uncategorised |
+| Overall vs per-category budget storage | Two separate tables (`overall_budgets`, `budgets`), not a nullable `category_id` on one | Explicit user decision: keeps the two concerns apart rather than overloading one table with a "what does null mean here" case |
+| Where "active budget mode" and category period live | `profiles` columns, not per-row on `budgets` | A per-row period can't structurally guarantee every category shares one value; centralising it makes disagreement impossible and gives Ask CAIT one fact instead of N rows to reconcile |
+| Budget mode switching | Flag flip only, never deletes the inactive mode's data | User's explicit choice — switching category→overall→category again should restore old amounts, not force re-entry |
 
 ---
 
 ## Open Questions
-- Encrypt bank tokens at rest? → **Yes, Phase 7. Use Supabase Vault or AES-256.**
+- Encrypt bank tokens at rest? → **Yes, Phase 8. Use Supabase Vault or AES-256.**
 - TrueLayer vs Plaid vs Monzo direct? → **Resolved.** Monzo's first-party API for now — see Decisions Made. TrueLayer/Plaid remain the answer if this ever needs to support other users' banks, not just mine.
 - Self-host Supabase? → Not needed for v1.
 - Nigeria support? → Mono (acquired by Flutterwave Jan 2026) for API. Manual CSV/PDF upload as fallback — more reliable at early stage given regulatory uncertainty.
